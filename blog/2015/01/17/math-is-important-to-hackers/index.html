@@ -1,0 +1,389 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Cookie Math - Hrvoje&#8217;s Blog</title>
+  <meta name="author" content="Hrvoje">
+
+  
+  <meta name="description" content="There was a very interesting presentation at the last 31C3 conference given by
+two very talented security researchers: Shahar Tal and Lior Oppenheim &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="https://blog.hrvoje.org/blog/2015/01/17/math-is-important-to-hackers">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Hrvoje's Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+        displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+      //,
+      //displayAlign: "left",
+      //displayIndent: "2em"
+    });
+</script>
+<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-51253042-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Hrvoje&#8217;s Blog</a></h1>
+  
+    <h2>
+    It&#8217;s only ones and zeroes.
+    </h2>
+  
+
+
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.hrvoje.org" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Cookie Math</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-01-17T15:53:09+01:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>17</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>3:53 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>There was a very interesting presentation at the last 31C3 conference given by
+two very talented security researchers: Shahar Tal and Lior Oppenheim. The
+vulnerability they found targets many different routers from various
+manufacturers and was, apparently, patched 10 years ago (!) by the software
+company who made RomPager, the software in question. Let’s just say vendors are
+slow in deploying patches, leaving tens of millions of routers vulnerable to
+potential remote bricking, turning into botnets or who knows what else. It was
+named Misfortune Cookie for a good reason, but what does that have to do with
+math?</p>
+
+<!--more-->
+
+<p>Apparently, there is a preallocated array in the webserver capable of
+storing 10 cookies, 40 bytes each. The cookie number is used as array index -
+converted to integer, multiplied by 40 and added to a memory address to read or
+write the correct location without ever checking boundaries.</p>
+
+<p>You can pass an arbitrary number and address any memory location relative to a
+certain fixed point in memory. The only catch is that it gets multiplied by 40.
+What can you do if you need better precision to avoid overwriting something
+else near the memory location you are targeting?</p>
+
+<p>This can be written in a form of <em>ax ≡ y (mod m)</em> and it’s called a <strong>Linear
+Congruence</strong>. Obviously, <em>a</em> is 40 since we move in steps of 40. We need to find
+such <em>x</em> that multiplied by 40 gives us a desired <em>y</em> modulo <em>m</em> we need to move in
+memory relative to the present location. <em>M</em> is <script type="math/tex">2^{32}</script> (the size of a 32 bit
+number could fit 0-4294967295, anything more than that and it will overflow and
+start from zero again, just like a clock face starts from 1 when it reaches
+12), making the equation 40 <em>x</em> ≡ <em>y</em> (mod <script type="math/tex">2^{32}</script>).</p>
+
+<p>For this to have a solution, <em>x</em> needs to be divisible with the greatest common
+divisor of both 40 and <script type="math/tex">2^{32}</script>, which is 8 - that’s how many unique
+solutions we’ll get. Now we can say <script type="math/tex">z= \frac{y}{8}</script>, and reduce the expression to <em>5x
+≡ z (mod 536870912)</em>. The way to solve it is to find the multiplicative
+inverse modulo <em>m</em> - a number we can multiply both sides with so that it gives 1
+when multiplied by 5 in this modular algebra.</p>
+
+<script type="math/tex; mode=display">5^{-1} \pmod{536870912} \equiv 214748365</script>
+
+<p>To get the other solutions, we need to keep adding the modulus value
+(<em>536870912</em>) to the result and reduce when needed.  The referer is located at
+<em>0x2e48</em> to the LEFT of the cookie array. Since we cannot go backwards, we would
+like to add <em>0xffffd1b8</em> to overflow 32 bit number and end up at the desired
+address.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="k">def</span> <span class="nf">calc</span><span class="p">(</span><span class="n">a</span><span class="p">):</span> <span class="k">return</span> <span class="p">((</span><span class="n">a</span><span class="o">/</span><span class="mi">8</span><span class="p">)</span><span class="o">*</span><span class="mi">214748365</span><span class="p">)</span> <span class="o">%</span> <span class="p">(</span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="mi">32</span><span class="p">)</span>
+</span><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="nb">sorted</span><span class="p">([(</span><span class="n">calc</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="s">&#39;0xffffd1b8&#39;</span><span class="p">,</span><span class="mi">16</span><span class="p">))</span><span class="o">+</span><span class="n">i</span><span class="o">*</span><span class="mi">536870912</span><span class="p">)</span><span class="o">%</span><span class="p">(</span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="mi">32</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">)])</span>
+</span><span class="line"><span class="p">[</span><span class="mi">322122251</span><span class="p">,</span> <span class="mi">858993163</span><span class="p">,</span> <span class="mi">1395864075</span><span class="p">,</span> <span class="mi">1932734987</span><span class="p">,</span> <span class="mi">2469605899</span><span class="p">,</span> <span class="mi">3006476811</span><span class="p">,</span> <span class="mi">3543347723</span><span class="p">,</span> <span class="mi">4080218635</span><span class="p">]</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># -- Let&#39;s do a check. </span>
+</span><span class="line">
+</span><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="nb">hex</span><span class="p">((</span><span class="mi">322122251</span><span class="o">*</span><span class="mi">40</span><span class="p">)</span> <span class="o">%</span> <span class="p">(</span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="mi">32</span><span class="p">))</span>
+</span><span class="line"><span class="s">&#39;0xffffd1b8&#39;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Now let’s try it on my router!</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+</pre></td><td class="code"><pre><code class="html"><span class="line">send: &#39;GET / HTTP/1.1\r\nHost: 192.168.1.1:7547\r\nCookie: C322122251=/referer-test.html;\r\n\r\n&#39;
+</span><span class="line">reply: &#39;HTTP/1.1 404 Not Found\r\n&#39;
+</span><span class="line">header: Content-Type: text/html
+</span><span class="line">header: Transfer-Encoding: chunked
+</span><span class="line">header: Server: RomPager/4.07 UPnP/1.0
+</span><span class="line">header: EXT:
+</span><span class="line"><span class="nt">&lt;html&gt;</span>
+</span><span class="line"><span class="nt">&lt;head&gt;</span>
+</span><span class="line"><span class="nt">&lt;title&gt;</span>Object Not Found<span class="nt">&lt;/title&gt;&lt;/head&gt;&lt;body&gt;</span>
+</span><span class="line"><span class="nt">&lt;h1&gt;</span>Object Not Found<span class="nt">&lt;/h1&gt;</span>The requested URL &#39;/&#39; was not found on the RomPager server.
+</span><span class="line"><span class="nt">&lt;p&gt;</span>Return to <span class="nt">&lt;A</span> <span class="na">HREF=</span><span class="s">&quot;/referer-test.html&quot;</span><span class="nt">&gt;</span>last page<span class="nt">&lt;/A&gt;&lt;p&gt;</span>
+</span><span class="line"><span class="nt">&lt;/body&gt;&lt;/html&gt;</span>        ^^^^^^^^^^^^^^^^^^
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h3 id="is-there-another-way">Is there another way?</h3>
+
+<p>It’s not necessary to find a general solution, sometimes thinking differently can work too.</p>
+
+<script type="math/tex; mode=display">40\cdot x \equiv y\pmod{2^{32}}</script>
+
+<p>How many additional bits can multiplying by 40 add to a number’s binary
+representation? It’s between 32 (that’s <script type="math/tex">2^{5}</script>) and 64 (that’s <script type="math/tex">2^{6}</script>),
+so we have to assume 6 bits. The question becomes, which number multiplied by
+40 and with 6 most significant bits discarded is equal to our input variable
+<em>y</em>? The router CPU might be stuck with 32 bits, but Python isn’t. Why not
+simply reconstruct these discarded bits by testing each case?  Guess what the
+discarded value might have been and divide by 40 to check if the assumption was
+correct. For just 6 bits added, it isn’t terribly inefficient to check all
+possibilities and it goes to prove there are many ways to address a problem.
+Pun intended! :)</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+</pre></td><td class="code"><pre><code class="mathematica"><span class="line"><span class="w">  </span><span class="n">Start</span><span class="w"> </span><span class="n">with</span><span class="w"> </span><span class="mi">4294955448</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="n">binary</span><span class="w"> </span><span class="n">form</span><span class="err">.</span><span class="w"></span>
+</span><span class="line"><span class="w">          </span><span class="mi">11111111111111111101000110111000</span><span class="w"></span>
+</span><span class="line">
+</span><span class="line"><span class="w">  </span><span class="n">Multiplying</span><span class="w"> </span><span class="n">by</span><span class="w"> </span><span class="mi">40</span><span class="w"> </span><span class="n">gives</span><span class="w"> </span><span class="mf">171798217920.</span><span class="w"> </span><span class="n">In</span><span class="w"> </span><span class="n">binary</span><span class="p">,</span><span class="w"> </span><span class="n">that</span><span class="err">&#39;</span><span class="n">s</span><span class="w"></span>
+</span><span class="line"><span class="w">  </span><span class="mi">100111</span><span class="w">  </span><span class="mi">11111111111110001100010011000000</span><span class="w"></span>
+</span><span class="line"><span class="w"> </span><span class="n">overflow</span><span class="w"></span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>The 100111 is simply too much to store in a 32 bit memory unit so it gets
+discarded, and the rest we called <em>y</em>. We now need to do this in reverse,
+starting from <em>y</em>, guessing the discarded part and checking if division by
+40 gives the starting value. If it does - that’s it.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">t</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="s">&#39;0xffffd1b8&#39;</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="p">((</span><span class="n">a</span><span class="o">&lt;&lt;</span><span class="mi">32</span><span class="p">)</span><span class="o">+</span><span class="n">t</span><span class="p">)</span><span class="o">/</span><span class="mi">40</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="mi">64</span><span class="p">))</span> <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">*</span><span class="mi">40</span><span class="p">)</span><span class="o">%</span><span class="p">(</span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="mi">32</span><span class="p">)</span><span class="o">==</span><span class="n">t</span> <span class="ow">and</span> <span class="n">i</span><span class="o">&lt;</span><span class="p">(</span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="mi">32</span><span class="p">)]</span>
+</span><span class="line"><span class="p">[</span><span class="mi">322122251</span><span class="p">,</span> <span class="mi">858993163</span><span class="p">,</span> <span class="mi">1395864075</span><span class="p">,</span> <span class="mi">1932734987</span><span class="p">,</span> <span class="mi">2469605899</span><span class="p">,</span> <span class="mi">3006476811</span><span class="p">,</span> <span class="mi">3543347723</span><span class="p">,</span> <span class="mi">4080218635</span><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>So the next time you complain learning math is silly when studying for a CS
+degree, just remember you might actually need it!</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Hrvoje</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2015-01-17T15:53:09+01:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>17</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>3:53 pm</span></time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="https://blog.hrvoje.org/blog/2015/01/17/math-is-important-to-hackers/" data-via="" data-counturl="https://blog.hrvoje.org/blog/2015/01/17/math-is-important-to-hackers/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/10/05/tic-tac-toe-in-dot-dot-dot-mysql/" title="Previous Post: Tic-Tac-Toe in ... MySQL">&laquo; Tic-Tac-Toe in &#8230; MySQL</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2015/07/15/ghost-detect/" title="Next Post: Ghost Ship">Ghost Ship &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Me</h1>
+  <img src="/images/hrvac-avatar3.png" style="border:none; box-shadow: none; margin-top: -10px;" /> 
+  <p>
+  I&#8217;m a geeky sysadmin and software developer who likes free software, electronics and math. 
+  </p>
+  <p>
+  To email me, please use:
+  </p>
+
+    <img id='email-photo-placeholder' />
+    
+    <script type="text/javascript">
+        var content = "YVZaQ1QxSjNNRXRIWjI5QlFVRkJUbE5WYUVWVlowRkJRVWs0UVVGQlFWWkRRVmxCUVVGQ0wyNXlNakpCUVVGQlFtMUtURkl3VVVFdmQwUXZRVkFyWjNaaFpWUkJRVUZCUTFoQ1NWZFlUVUZCUVhOVVFVRkJURVYzUlVGdGNIZFpRVUZCUVVJelVrcFVWVlZJTTJkdlNFWjNkMlZtUmxGM1psRkJRVUZDYkRCU1ZtZ3dVVEk1ZEdKWFZuVmtRVUpFWTIxV2FHUkhWbXRKU0dSd1pFZG5aMUl3YkU1VlJtVkNSR2hqUVVGQlVtOVRWVkpDVmtkcVpUZGFjR1JoUWpGV1JVMWtMMk40VDFaNFIyZGlZV3hRY1ZaNFIydFdRM2xHVlV0UFJYRk9SVWRwWnl0T2VHOHJibE53VDJsaFVGSkNVM0ZCWjFkQ0wzRm5LMmxFSzBsRlNXZHNRUzlwZGxaaWIySmFVVVpoYjBjNVZVZDNVbGN4Y21FeWJ6Qm9iMGt5WVZsdmJESnhVVzFIVmpodFkycHljMkp6Tm1FMFRESnNUemRFWTNNclppdGtLMlF2V25ZM1drMDNUelZ2Y1c5VlZuUm9MM05XU1ZKbmMwbExPRkpTVjJsTFpYZE5NV2M0U1dwS2FrVlNVMFJ4VVZGTVpXTTBSalV6UzNSMU1VeHFabFpaTDJWVlUydFhhMVIxUmxwR1VGSlhVa1ZTUlRaTGVVVkZVbVZWY0VWR2FHWlFiSEpPV1ZCTGIzRkhZMHBhUkVoM1JtUkJURkJCYzNWQ1pYVkJUMWxCZWxsTGVVdHlTek13WkRWVFdqSXlaMFZ2TUVFek1FRmhaVUZ1TkVReFNIVlFUM1UwU0VSb2FqaE5NMHBrZHpNdmRVSnVkek5VV2psbGJ6Z3ZjMmN3UVN0TlFUazRRbnBqUVRZMFJXWm5URFpCV0hWRFN6UmFhVzUzVEc1QlRTdEJUalJJTjJkdmFXRmpZbTUzWm5OQ1ZGbzNibWRHYlVwbVFXSmpURmhxZFVKaVdWbDNURGRJWkdkTFRFaERXVWh0UkZGNGMwNUJhbUowTTNKak1IWnFTV3htVVhKNGRrNW1OV3BzY0RsSVoyVnhNSFJqVkRaRFNHaFFlR1ZSZEZSVWVTOUJTekZCU0ZoQlZFMUJRM05VYTI1Rk4yVmFkMFpZUTBKbVVUUkROMUZHYldwU1IxbDJiV1Z5SzJaRWFUWlJWMWRIWlZwS05FUnFkM1ZhZGpkTlRHcHRWeXRDYlc5QllWbENlbmRRZGtKUmFHNW5NMEZFYUhaUVFqZGhXaXRJTmpGWlMydzVkSGhHTkRJelNHTmlNblZ6UVhrMFIxaG5aVEpQWTNoMU5FaEpOek4zTm5Oa1ZFY3JSemxwWlVrek5HZzVlRnBpWkRSMVNqaEZjbWRKSzBOU1JFOUdSU3RSYURWNEsxRjBWRlI2ZEdKeE5FUXJRM2hzVFZZNFEwaFJiR3QyZDJwUFpUUkZNVVIwVDJWSlNqVnNkMWhzT1hsMGVuaHFRMEprUTBGNFIybFBaSEpaU2xkT1dIZGlaVUZDWWxvNFZsbG5ibWxZUVUxalpYZ3dabXh6UVVsWlpGcHJWbmRtYUdaM2MySjJiVVVyUkU5SVVFWlVaQ3N3TVVSdU9IQXdTbU5TYkhsblprbGxLMWwyUzFkS1dqYzJZbkV2WkVKRVRWbHFVVWd3UTJaelVtaHJkVGR3ZUZOTlNsaERWSFJGVnpkS1psRTROR0ZzWjBaS2FVeEZUWGR5VFhNdlJYY3dRa0k0ZEhsblVWUjVNSGMxZG1sVmEyMU1iVTFQWlRaTVdFbEpkVU5TU1RsT1FUQktha29yTkdZeVNHZEJhemRLYjBWd09IcHRXa2xhTkc5SWVVaDJiVXg1Vmt0eGVpc3djR2sxZDBZMmVHVnhaMUpQVFdVeWNqWndTV1ExVDJodE5WSjRSVGRFVURoYWJVdFhUV1Z3V1VSNGRXUldiVzVVV0ZWRE56UlRXVzVHV1VoWVMyRnhNV0Z3WVhCaGIyeFdVbFpXY2xweFJDdFBabWxzUTJGbFJ6bDROWEYzT1dsWlJEaEJUbmxpWjBSM1ZHNHJORVJ5U0dGYWJFUjJWRmRDUkhsMWNXdGtWV1JSU3pST2RrczJaekZaVVVFcmQwRnVhRWRTUW1oR1drTkVlSFF6WkdkTE5FRllaM05VYm1jclUzSlJXbVZOZFRSTVYyTTRVWFowUnl0RE1tNVFOM29yYjJwTVZ6UTJReXRhWVUxbmJtNUJZME5JWlVZNGVqbEtjM0o2TjJKTkwySldkVXB1WWs5MWNEaGxNbXcxVlZkRVNUTlpkR3BaUTBoM1UxQTBWR1ZDUlRoQlVqWjVZVTlCY25WQk5YQnVORnBRYkhodFJWQkhPVlpDUXpkVVJsUXZUVXczZERGc016SlJWWE56U0dreVFWUnplazlQV0hsRlduVXpUbEJGT0ZsUE0yTXpkMkVyV2pSaVYwMWpVMjUwWlhKa1NuTnljR3h0T0VSTlJEVk1PRlJVWVZnclN6UkNaVTlvVTFCSVZWZE9aakJqUmxvM1J6aE5ibWd6WnpJeVpHOHpTbGg1V0VkaUswVmxUR1JoV25wU2NYSjZRakpCTWpKNmVWWkZSemM1VXpoVFltd3JhMmxGYVhwalFWZFdZakp4VkZBMldGZENjemxEUkhodVNHUm9TbUV6TTFoQk1IUldkR0ZOVXpOdlNVUktNVk14ZEd0TVpYbDJLMkowT1V3dk5raFRjbWxEZDFoclZtOVNkVkUxTkVWa2FGTjRkVW80ZDBkeGExaGpRbTFsT0dONlEzVjVNRGRsUTBwRGRXdHFiWEY0YlV0YVpGa3dkazlYTlRkRk9XMDRVREkyVHl0Q1VEWXdNalpWYkhGbE5IWnFkRXBvVGxSb1pUZGFaVk5SYldwamNHWnJiRmxYVUVkUU1HTkpTemhTVWpJMWRHY3ZVM2hpWTBaVldWb3dSakJCUVVGQlFWTlZWazlTU3pWRFdVbEpQUT09"; 
+        for(var i=1;i<3;i++) content=atob(content);
+        $('#email-photo-placeholder').attr('src', 'data:image/png;base64,'+content);
+    </script>
+
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/12/03/the-eagle-has-landed/">The Eagle Has Landed</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/07/15/ghost-detect/">Ghost Ship</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/01/17/math-is-important-to-hackers/">Cookie Math</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/05/tic-tac-toe-in-dot-dot-dot-mysql/">Tic-Tac-Toe in &#8230; MySQL</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/27/my-friends-ultra-short-2048/">My Friend&#8217;s 2048 Version</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2018 - Hrvoje -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

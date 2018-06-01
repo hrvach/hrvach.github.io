@@ -1,0 +1,306 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>My Friend&#8217;s 2048 Version - Hrvoje&#8217;s Blog</title>
+  <meta name="author" content="Hrvoje">
+
+  
+  <meta name="description" content="Recently I tried implementing a cool game called 2048 in Python and make it as short as possible. Thinking I did a decent job, I challenged a friend &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="https://blog.hrvoje.org/blog/2014/09/27/my-friends-ultra-short-2048">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Hrvoje's Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+        displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+      //,
+      //displayAlign: "left",
+      //displayIndent: "2em"
+    });
+</script>
+<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-51253042-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Hrvoje&#8217;s Blog</a></h1>
+  
+    <h2>
+    It&#8217;s only ones and zeroes.
+    </h2>
+  
+
+
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.hrvoje.org" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">My Friend&#8217;s 2048 Version</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-09-27T16:37:58+02:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>27</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>4:37 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Recently I tried implementing a cool game called 2048 in Python and make it as short as possible. Thinking I did a decent job, I challenged a friend to give it a go. Blown away how much shorter it turned out to be, all I can say is - kudos to Veky.</p>
+
+<!--more-->
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span>Veky&#8217;s very short 2048 </span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">random</span> <span class="kn">as</span> <span class="nn">R</span><span class="o">,</span><span class="nn">tkinter</span> <span class="kn">as</span> <span class="nn">T</span>
+</span><span class="line"><span class="k">def</span> <span class="nf">M</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">q</span><span class="o">=</span><span class="k">lambda</span> <span class="n">m</span><span class="p">:</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">list</span><span class="p">,</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">m</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]))),</span><span class="n">u</span><span class="o">=</span><span class="p">{</span><span class="s">&quot;key&quot;</span><span class="p">:</span><span class="nb">bool</span><span class="p">,</span><span class="s">&quot;reverse&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">}):</span>
+</span><span class="line"> <span class="n">m</span><span class="o">=</span><span class="n">b</span>
+</span><span class="line"> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="o">-</span><span class="n">n</span><span class="p">):</span><span class="n">m</span><span class="o">=</span><span class="n">q</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+</span><span class="line"> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">m</span><span class="p">:</span>
+</span><span class="line">  <span class="n">r</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="o">**</span><span class="n">u</span><span class="p">)</span>
+</span><span class="line">  <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+</span><span class="line">   <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">==</span><span class="n">r</span><span class="p">[</span><span class="n">j</span><span class="p">]:</span><span class="n">r</span><span class="p">[</span><span class="n">j</span><span class="p">:</span><span class="n">j</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span><span class="o">=</span><span class="mi">2</span><span class="o">*</span><span class="n">r</span><span class="p">[</span><span class="n">j</span><span class="p">],</span><span class="mi">0</span>
+</span><span class="line">  <span class="n">r</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="o">**</span><span class="n">u</span><span class="p">)</span>
+</span><span class="line"> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span><span class="n">m</span><span class="o">=</span><span class="n">q</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+</span><span class="line"> <span class="k">return</span> <span class="n">m</span><span class="o">*</span><span class="p">(</span><span class="n">m</span><span class="o">!=</span><span class="n">b</span><span class="p">)</span>
+</span><span class="line"><span class="k">def</span> <span class="nf">A</span><span class="p">(</span><span class="n">q</span><span class="o">=</span><span class="mi">8</span><span class="o">**</span><span class="mi">8</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+</span><span class="line"> <span class="n">k</span><span class="p">,</span><span class="n">l</span><span class="o">=</span><span class="n">R</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="nb">divmod</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span><span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">b</span><span class="p">,[]))</span><span class="k">if</span> <span class="ow">not</span> <span class="n">j</span><span class="p">])</span>
+</span><span class="line"> <span class="n">b</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">l</span><span class="p">]</span><span class="o">=</span><span class="n">R</span><span class="o">.</span><span class="n">choice</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+</span><span class="line"> <span class="k">for</span> <span class="n">l</span><span class="p">,</span><span class="n">d</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">L</span><span class="p">,</span><span class="nb">sum</span><span class="p">(</span><span class="n">b</span><span class="p">,[])):</span><span class="n">l</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">d</span> <span class="ow">or</span><span class="s">&#39;&#39;</span><span class="p">,</span><span class="n">bg</span><span class="o">=</span><span class="s">&#39;#&#39;</span><span class="o">+</span><span class="n">format</span><span class="p">(</span><span class="n">q</span><span class="o">-</span><span class="n">d</span><span class="o">*</span><span class="mi">999</span><span class="p">,</span><span class="s">&quot;06x&quot;</span><span class="p">))</span>
+</span><span class="line"><span class="k">def</span> <span class="nf">K</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+</span><span class="line"> <span class="n">c</span><span class="o">=</span><span class="n">M</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">Left</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">Up</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">Right</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">Down</span><span class="o">=</span><span class="mi">3</span><span class="p">)[</span><span class="n">e</span><span class="o">.</span><span class="n">keysym</span><span class="p">])</span>
+</span><span class="line"> <span class="k">if</span> <span class="n">c</span><span class="p">:</span><span class="n">b</span><span class="p">[:]</span><span class="o">=</span><span class="n">c</span><span class="p">;</span><span class="n">A</span><span class="p">()</span>
+</span><span class="line"> <span class="nb">any</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">M</span><span class="p">,</span><span class="n">F</span><span class="p">))</span><span class="ow">or</span><span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">bg</span><span class="o">=</span><span class="s">&#39;red&#39;</span><span class="p">,</span><span class="n">text</span><span class="o">=</span><span class="s">&#39;&lt;E2&gt;&lt;98&gt;&lt;B9&gt;&#39;</span><span class="p">)</span><span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">L</span><span class="p">]</span>
+</span><span class="line"><span class="n">F</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">);</span><span class="n">b</span><span class="p">,</span><span class="n">t</span><span class="o">=</span><span class="p">[</span><span class="mi">4</span><span class="o">*</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">F</span><span class="p">],</span><span class="n">T</span><span class="o">.</span><span class="n">Tk</span><span class="p">();</span><span class="n">t</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+</span><span class="line"><span class="n">L</span><span class="o">=</span><span class="p">[</span><span class="n">T</span><span class="o">.</span><span class="n">Button</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">height</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">width</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span><span class="n">font</span><span class="o">=</span><span class="p">(</span><span class="s">&quot;Helvetica&quot;</span><span class="p">,</span><span class="mi">24</span><span class="p">))</span><span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="mi">4</span><span class="o">*</span><span class="n">F</span><span class="p">]</span>
+</span><span class="line"><span class="p">[</span><span class="n">L</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="mi">4</span><span class="o">+</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">i</span><span class="p">,</span><span class="n">column</span><span class="o">=</span><span class="n">j</span><span class="p">)</span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">F</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">F</span><span class="p">]</span>
+</span><span class="line"><span class="n">A</span><span class="p">();</span><span class="n">t</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s">&#39;&lt;Key&gt;&#39;</span><span class="p">,</span><span class="n">K</span><span class="p">);</span><span class="n">t</span><span class="o">.</span><span class="n">mainloop</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Hrvoje</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2014-09-27T16:37:58+02:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>27</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>4:37 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/2048/'>2048</a>, <a class='category' href='/blog/categories/programming/'>programming</a>, <a class='category' href='/blog/categories/python/'>python</a>, <a class='category' href='/blog/categories/veky/'>veky</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="https://blog.hrvoje.org/blog/2014/09/27/my-friends-ultra-short-2048/" data-via="" data-counturl="https://blog.hrvoje.org/blog/2014/09/27/my-friends-ultra-short-2048/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/09/20/a-simple-2048-clone-in-python/" title="Previous Post: A simple 2048 clone in Python">&laquo; A simple 2048 clone in Python</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/10/05/tic-tac-toe-in-dot-dot-dot-mysql/" title="Next Post: Tic-Tac-Toe in ... MySQL">Tic-Tac-Toe in &#8230; MySQL &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Me</h1>
+  <img src="/images/hrvac-avatar3.png" style="border:none; box-shadow: none; margin-top: -10px;" /> 
+  <p>
+  I&#8217;m a geeky sysadmin and software developer who likes free software, electronics and math. 
+  </p>
+  <p>
+  To email me, please use:
+  </p>
+
+    <img id='email-photo-placeholder' />
+    
+    <script type="text/javascript">
+        var content = "YVZaQ1QxSjNNRXRIWjI5QlFVRkJUbE5WYUVWVlowRkJRVWs0UVVGQlFWWkRRVmxCUVVGQ0wyNXlNakpCUVVGQlFtMUtURkl3VVVFdmQwUXZRVkFyWjNaaFpWUkJRVUZCUTFoQ1NWZFlUVUZCUVhOVVFVRkJURVYzUlVGdGNIZFpRVUZCUVVJelVrcFVWVlZJTTJkdlNFWjNkMlZtUmxGM1psRkJRVUZDYkRCU1ZtZ3dVVEk1ZEdKWFZuVmtRVUpFWTIxV2FHUkhWbXRKU0dSd1pFZG5aMUl3YkU1VlJtVkNSR2hqUVVGQlVtOVRWVkpDVmtkcVpUZGFjR1JoUWpGV1JVMWtMMk40VDFaNFIyZGlZV3hRY1ZaNFIydFdRM2xHVlV0UFJYRk9SVWRwWnl0T2VHOHJibE53VDJsaFVGSkNVM0ZCWjFkQ0wzRm5LMmxFSzBsRlNXZHNRUzlwZGxaaWIySmFVVVpoYjBjNVZVZDNVbGN4Y21FeWJ6Qm9iMGt5WVZsdmJESnhVVzFIVmpodFkycHljMkp6Tm1FMFRESnNUemRFWTNNclppdGtLMlF2V25ZM1drMDNUelZ2Y1c5VlZuUm9MM05XU1ZKbmMwbExPRkpTVjJsTFpYZE5NV2M0U1dwS2FrVlNVMFJ4VVZGTVpXTTBSalV6UzNSMU1VeHFabFpaTDJWVlUydFhhMVIxUmxwR1VGSlhVa1ZTUlRaTGVVVkZVbVZWY0VWR2FHWlFiSEpPV1ZCTGIzRkhZMHBhUkVoM1JtUkJURkJCYzNWQ1pYVkJUMWxCZWxsTGVVdHlTek13WkRWVFdqSXlaMFZ2TUVFek1FRmhaVUZ1TkVReFNIVlFUM1UwU0VSb2FqaE5NMHBrZHpNdmRVSnVkek5VV2psbGJ6Z3ZjMmN3UVN0TlFUazRRbnBqUVRZMFJXWm5URFpCV0hWRFN6UmFhVzUzVEc1QlRTdEJUalJJTjJkdmFXRmpZbTUzWm5OQ1ZGbzNibWRHYlVwbVFXSmpURmhxZFVKaVdWbDNURGRJWkdkTFRFaERXVWh0UkZGNGMwNUJhbUowTTNKak1IWnFTV3htVVhKNGRrNW1OV3BzY0RsSVoyVnhNSFJqVkRaRFNHaFFlR1ZSZEZSVWVTOUJTekZCU0ZoQlZFMUJRM05VYTI1Rk4yVmFkMFpZUTBKbVVUUkROMUZHYldwU1IxbDJiV1Z5SzJaRWFUWlJWMWRIWlZwS05FUnFkM1ZhZGpkTlRHcHRWeXRDYlc5QllWbENlbmRRZGtKUmFHNW5NMEZFYUhaUVFqZGhXaXRJTmpGWlMydzVkSGhHTkRJelNHTmlNblZ6UVhrMFIxaG5aVEpQWTNoMU5FaEpOek4zTm5Oa1ZFY3JSemxwWlVrek5HZzVlRnBpWkRSMVNqaEZjbWRKSzBOU1JFOUdSU3RSYURWNEsxRjBWRlI2ZEdKeE5FUXJRM2hzVFZZNFEwaFJiR3QyZDJwUFpUUkZNVVIwVDJWSlNqVnNkMWhzT1hsMGVuaHFRMEprUTBGNFIybFBaSEpaU2xkT1dIZGlaVUZDWWxvNFZsbG5ibWxZUVUxalpYZ3dabXh6UVVsWlpGcHJWbmRtYUdaM2MySjJiVVVyUkU5SVVFWlVaQ3N3TVVSdU9IQXdTbU5TYkhsblprbGxLMWwyUzFkS1dqYzJZbkV2WkVKRVRWbHFVVWd3UTJaelVtaHJkVGR3ZUZOTlNsaERWSFJGVnpkS1psRTROR0ZzWjBaS2FVeEZUWGR5VFhNdlJYY3dRa0k0ZEhsblVWUjVNSGMxZG1sVmEyMU1iVTFQWlRaTVdFbEpkVU5TU1RsT1FUQktha29yTkdZeVNHZEJhemRLYjBWd09IcHRXa2xhTkc5SWVVaDJiVXg1Vmt0eGVpc3djR2sxZDBZMmVHVnhaMUpQVFdVeWNqWndTV1ExVDJodE5WSjRSVGRFVURoYWJVdFhUV1Z3V1VSNGRXUldiVzVVV0ZWRE56UlRXVzVHV1VoWVMyRnhNV0Z3WVhCaGIyeFdVbFpXY2xweFJDdFBabWxzUTJGbFJ6bDROWEYzT1dsWlJEaEJUbmxpWjBSM1ZHNHJORVJ5U0dGYWJFUjJWRmRDUkhsMWNXdGtWV1JSU3pST2RrczJaekZaVVVFcmQwRnVhRWRTUW1oR1drTkVlSFF6WkdkTE5FRllaM05VYm1jclUzSlJXbVZOZFRSTVYyTTRVWFowUnl0RE1tNVFOM29yYjJwTVZ6UTJReXRhWVUxbmJtNUJZME5JWlVZNGVqbEtjM0o2TjJKTkwySldkVXB1WWs5MWNEaGxNbXcxVlZkRVNUTlpkR3BaUTBoM1UxQTBWR1ZDUlRoQlVqWjVZVTlCY25WQk5YQnVORnBRYkhodFJWQkhPVlpDUXpkVVJsUXZUVXczZERGc016SlJWWE56U0dreVFWUnplazlQV0hsRlduVXpUbEJGT0ZsUE0yTXpkMkVyV2pSaVYwMWpVMjUwWlhKa1NuTnljR3h0T0VSTlJEVk1PRlJVWVZnclN6UkNaVTlvVTFCSVZWZE9aakJqUmxvM1J6aE5ibWd6WnpJeVpHOHpTbGg1V0VkaUswVmxUR1JoV25wU2NYSjZRakpCTWpKNmVWWkZSemM1VXpoVFltd3JhMmxGYVhwalFWZFdZakp4VkZBMldGZENjemxEUkhodVNHUm9TbUV6TTFoQk1IUldkR0ZOVXpOdlNVUktNVk14ZEd0TVpYbDJLMkowT1V3dk5raFRjbWxEZDFoclZtOVNkVkUxTkVWa2FGTjRkVW80ZDBkeGExaGpRbTFsT0dONlEzVjVNRGRsUTBwRGRXdHFiWEY0YlV0YVpGa3dkazlYTlRkRk9XMDRVREkyVHl0Q1VEWXdNalpWYkhGbE5IWnFkRXBvVGxSb1pUZGFaVk5SYldwamNHWnJiRmxYVUVkUU1HTkpTemhTVWpJMWRHY3ZVM2hpWTBaVldWb3dSakJCUVVGQlFWTlZWazlTU3pWRFdVbEpQUT09"; 
+        for(var i=1;i<3;i++) content=atob(content);
+        $('#email-photo-placeholder').attr('src', 'data:image/png;base64,'+content);
+    </script>
+
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/12/03/the-eagle-has-landed/">The Eagle Has Landed</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/07/15/ghost-detect/">Ghost Ship</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/01/17/math-is-important-to-hackers/">Cookie Math</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/05/tic-tac-toe-in-dot-dot-dot-mysql/">Tic-Tac-Toe in &#8230; MySQL</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/27/my-friends-ultra-short-2048/">My Friend&#8217;s 2048 Version</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2018 - Hrvoje -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
