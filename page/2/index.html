@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hrvoje&#39;s Blog &middot; Hrvoje&#39;s Blog</title>
+
+    <meta name="description" content="It&#39;s only ones and zeros">
+
+    <meta name="generator" content="Hugo 0.73.0" />
+    <meta name="twitter:card" content="summary">
+    
+    <meta name="twitter:title" content="Hrvoje&#39;s Blog &middot; Hrvoje&#39;s Blog">
+    <meta name="twitter:description" content="It&#39;s only ones and zeros">
+
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Hrvoje&#39;s Blog &middot; Hrvoje&#39;s Blog">
+    <meta property="og:description" content="It&#39;s only ones and zeros">
+
+    <link href='//fonts.googleapis.com/css?family=Source+Sans+Pro:400,700|Oxygen:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pure/0.6.0/pure-min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pure/0.6.0/grids-responsive-min.css">
+
+    <link rel="stylesheet" href='https://blog.hrvoje.org/css/all.min.css'>
+    <link rel="stylesheet" href='https://blog.hrvoje.org/css/syntax.css'>
+
+    <link rel="alternate" type="application/rss+xml" title="Hrvoje&#39;s Blog" href='https://blog.hrvoje.org/index.xml' />
+</head>
+<body>
+
+
+<div id="layout" class="pure-g">
+    <div class="sidebar pure-u-1 pure-u-md-1-6">
+    <div class="header">
+        <hgroup>
+            <h1 class="brand-title"><a href="https://blog.hrvoje.org/">Hrvoje&#39;s Blog</a></h1>
+            <h2 class="brand-tagline"> It&#39;s only ones and zeros </h2>
+        </hgroup>
+        <nav class="nav">
+            <ul class="nav-list">
+                
+                <li class="nav-item">
+                    <a class="pure-button" href="https://www.linkedin.com/in/hcavrak">
+                        <i class="icon-linkedin"></i> LinkedIn
+                    </a>
+                </li>
+                
+                
+                <li class="nav-item">
+                    <a class="pure-button" href="https://twitter.com/hcavrak">
+                        <i class="icon-twitter"></i>Twitter
+                    </a>
+                </li>
+                
+                
+                <li class="nav-item">
+                    <a class="pure-button" href="https://github.com/hrvach">
+                        <i class="icon-github"></i>Github
+                    </a>
+                </li>
+                
+                
+                <li class="nav-item">
+                    <a class="pure-button" href='https://blog.hrvoje.org/index.xml'>
+                        <i class="icon-rss"></i> rss
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+
+
+    <div class="content pure-u-1 pure-u-md-2-3">
+        <div>
+            
+            <div class="posts">
+                
+                <h1 class="content-subhead">17 Jan 2015, 15:53</h1>
+                <section class="post">
+                    <header class="post-header">
+
+                        <a href="https://blog.hrvoje.org/2015/01/cookie-math/" class="post-title">Cookie Math</a>
+
+                        <p class="post-meta">
+                            
+                            
+                                
+                            
+                        </p>
+                    </header>
+
+                    <div class="post-description">
+                        <p>There was a very interesting presentation at the last 31C3 conference given by
+two very talented security researchers: Shahar Tal and Lior Oppenheim. The
+vulnerability they found targets many different routers from various
+manufacturers and was, apparently, patched 10 years ago (!) by the software
+company who made RomPager, the software in question. Let&rsquo;s just say vendors are
+slow in deploying patches, leaving tens of millions of routers vulnerable to
+potential remote bricking, turning into botnets or who knows what else. It was
+named Misfortune Cookie for a good reason, but what does that have to do with
+math?</p>
+<p>Apparently, there is a preallocated array in the webserver capable of
+storing 10 cookies, 40 bytes each. The cookie number is used as array index -
+converted to integer, multiplied by 40 and added to a memory address to read or
+write the correct location without ever checking boundaries.</p>
+<p>You can pass an arbitrary number and address any memory location relative to a
+certain fixed point in memory. The only catch is that it gets multiplied by 40.
+What can you do if you need better precision to avoid overwriting something
+else near the memory location you are targeting?</p>
+<p>This can be written in a form of <em>ax ≡ y (mod m)</em> and it&rsquo;s called a <strong>Linear
+Congruence</strong>. Obviously, <em>a</em> is 40 since we move in steps of 40. We need to find
+such <em>x</em> that multiplied by 40 gives us a desired <em>y</em> modulo <em>m</em> we need to move in
+memory relative to the present location. <em>M</em> is
+<img src="/img/6de36bf7be6aa5ef824c78d2a53af445.svg" alt=""> (the size of a 32 bit
+number could fit 0-4294967295, anything more than that and it will
+overflow and start from zero again, just like a clock face starts from
+1 when it reaches 12), making the equation 40 <em>x</em> ≡ <em>y</em> (mod
+<img src="/img/6de36bf7be6aa5ef824c78d2a53af445.svg" alt="">).</p>
+<p>For this to have a solution, <em>x</em> needs to be divisible with the greatest common
+divisor of both 40 and <img src="/img/6de36bf7be6aa5ef824c78d2a53af445.svg" alt="">,
+which is 8 - that&rsquo;s how many unique solutions we&rsquo;ll get. Now we can
+say <img src="/img/0f7bd51a44b079c25b804097660feeaa.svg?style=centerimg" alt="">
+and reduce the expression to <em>5x ≡ z (mod 536870912)</em>. The way
+to solve it is to find the multiplicative inverse modulo <em>m</em> - a
+number we can multiply both sides with so that it gives 1 when
+multiplied by 5 in this modular algebra.</p>
+<p><img src="/img/34545203a13436a11e4a84f30d8d4825.svg?style=centerimg" alt=""></p>
+<p>To get the other solutions, we need to keep adding the modulus value
+(<em>536870912</em>) to the result and reduce when needed.  The referer is located at
+<em>0x2e48</em> to the LEFT of the cookie array. Since we cannot go backwards, we would
+like to add <em>0xffffd1b8</em> to overflow 32 bit number and end up at the desired
+address.</p>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="o">&gt;&gt;&gt;</span> <span class="k">def</span> <span class="nf">calc</span><span class="p">(</span><span class="n">a</span><span class="p">):</span> <span class="k">return</span> <span class="p">((</span><span class="n">a</span><span class="o">/</span><span class="mi">8</span><span class="p">)</span><span class="o">*</span><span class="mi">214748365</span><span class="p">)</span> <span class="o">%</span> <span class="p">(</span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="mi">32</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">sorted</span><span class="p">([(</span><span class="n">calc</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="s1">&#39;0xffffd1b8&#39;</span><span class="p">,</span><span class="mi">16</span><span class="p">))</span><span class="o">+</span><span class="n">i</span><span class="o">*</span><span class="mi">536870912</span><span class="p">)</span><span class="o">%</span><span class="p">(</span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="mi">32</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">)])</span>
+<span class="p">[</span><span class="mi">322122251</span><span class="p">,</span> <span class="mi">858993163</span><span class="p">,</span> <span class="mi">1395864075</span><span class="p">,</span> <span class="mi">1932734987</span><span class="p">,</span> <span class="mi">2469605899</span><span class="p">,</span> <span class="mi">3006476811</span><span class="p">,</span> <span class="mi">3543347723</span><span class="p">,</span> <span class="mi">4080218635</span><span class="p">]</span>
+
+<span class="c1"># -- Let&#39;s do a check. </span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">hex</span><span class="p">((</span><span class="mi">322122251</span><span class="o">*</span><span class="mi">40</span><span class="p">)</span> <span class="o">%</span> <span class="p">(</span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="mi">32</span><span class="p">))</span>
+<span class="s1">&#39;0xffffd1b8&#39;</span>
+</code></pre></div><p>Now let&rsquo;s try it on my router!</p>
+<pre><code>
+send: 'GET / HTTP/1.1\r\nHost: 192.168.1.1:7547\r\nCookie: C322122251=/referer-test.html;\r\n\r\n'
+reply: 'HTTP/1.1 404 Not Found\r\n'
+header: Content-Type: text/html
+header: Transfer-Encoding: chunked
+header: Server: RomPager/4.07 UPnP/1.0
+header: EXT:
+&lt;html&gt;
+&lt;head&gt;
+&lt;title&gt;Object Not Found&lt;/title&gt;&lt;/head&gt;&lt;body&gt;
+&lt;h1&gt;Object Not Found&lt;/h1&gt;The requested URL '/' was not found on the RomPager server.
+&lt;p&gt;Return to &lt;A HREF=&quot;/referer-test.html&quot;&gt;last page&lt;/A&gt;&lt;p&gt;
+&lt;/body&gt;&lt;/html&gt;        ^^^^^^^^^^^^^^^^^^
+
+</code></pre><h3 id="is-there-another-way">Is there another way?</h3>
+<p>It&rsquo;s not necessary to find a general solution, sometimes thinking differently can work too.</p>
+<p><img src="/img/9fa74eae64b690861a49311b6cad1e9e.svg?style=centerimg" alt=""></p>
+<p>How many additional bits can multiplying by 40 add to a number&rsquo;s binary
+representation? It&rsquo;s between 32 (that&rsquo;s
+<img src="/img/d851672c7ed2542e2950e6444c9c1d7a.svg" alt="">) and 64 (that&rsquo;s
+<img src="/img/3eec1d4b188ea063f48ce9d3eac2dc3d.svg" alt="">), so we have to assume 6
+bits. The question becomes, which number multiplied by 40 and with 6
+most significant bits discarded is equal to our input variable <em>y</em>?
+The router CPU might be stuck with 32 bits, but Python isn&rsquo;t. Why not
+simply reconstruct these discarded bits by testing each case?  Guess
+what the discarded value might have been and divide by 40 to check if
+the assumption was correct. For just 6 bits added, it isn&rsquo;t terribly
+inefficient to check all possibilities and it goes to prove there are
+many ways to address a problem.  Pun intended! :)</p>
+<pre><code>  Start with 4294955448 in binary form.
+          11111111111111111101000110111000
+
+  Multiplying by 40 gives 171798217920. In binary, that's
+  100111  11111111111110001100010011000000
+ overflow
+</code></pre><p>The 100111 is simply too much to store in a 32 bit memory unit so it gets
+discarded, and the rest we called <em>y</em>. We now need to do this in reverse,
+starting from <em>y</em>, guessing the discarded part and checking if division by
+40 gives the starting value. If it does - that&rsquo;s it.</p>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="n">t</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="s1">&#39;0xffffd1b8&#39;</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="p">((</span><span class="n">a</span><span class="o">&lt;&lt;</span><span class="mi">32</span><span class="p">)</span><span class="o">+</span><span class="n">t</span><span class="p">)</span><span class="o">/</span><span class="mi">40</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="mi">64</span><span class="p">))</span> <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">*</span><span class="mi">40</span><span class="p">)</span><span class="o">%</span><span class="p">(</span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="mi">32</span><span class="p">)</span><span class="o">==</span><span class="n">t</span> <span class="ow">and</span> <span class="n">i</span><span class="o">&lt;</span><span class="p">(</span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="mi">32</span><span class="p">)]</span>
+<span class="p">[</span><span class="mi">322122251</span><span class="p">,</span> <span class="mi">858993163</span><span class="p">,</span> <span class="mi">1395864075</span><span class="p">,</span> <span class="mi">1932734987</span><span class="p">,</span> <span class="mi">2469605899</span><span class="p">,</span> <span class="mi">3006476811</span><span class="p">,</span> <span class="mi">3543347723</span><span class="p">,</span> <span class="mi">4080218635</span><span class="p">]</span>
+
+</code></pre></div><p>So the next time you complain learning math is silly when studying for a CS
+degree, just remember you might actually need it!</p>
+                    </div>
+                </section>
+                
+                <h1 class="content-subhead">05 Oct 2014, 17:25</h1>
+                <section class="post">
+                    <header class="post-header">
+
+                        <a href="https://blog.hrvoje.org/2014/10/tic-tac-toe-in-...-mysql/" class="post-title">Tic-Tac-Toe in ... MySQL</a>
+
+                        <p class="post-meta">
+                            
+                            
+                        </p>
+                    </header>
+
+                    <div class="post-description">
+                        <p>If you ever attended a boring lecture, you probably know this game by heart. Frequently scribbled on textbook margins and school desks, it&rsquo;s insanely popular and fun to play. Talking to a friend about MySQL made me wonder if such a respectable, high performance database can be misused and tricked into being a gaming platfom. While it isn&rsquo;t likely going to run Quake, maybe a simple game of Tic-Tac-Toe would be just right.</p>
+<p>Why would anyone do this? Well, making <a href="https://www.youtube.com/watch?v=qWkUFxItWmU">floppy drives play The Imperial March</a> isn’t very useful either, but it’s darn entertaining. MySQL is a powerful tool with strong scripting capabilities and Turing complete as well, so implementing this game in a single player mode is possible.</p>
+<h3 id="implementation">Implementation</h3>
+<p>First, we need a board. To keep things simple, we’ll keep it as a 9 letter string - matrix element with position (1,1) will be the first element, then element (1,2) and so on .</p>
+<div class="highlight"><pre class="chroma"><code class="language-mysql" data-lang="mysql"><span class="kt">SET</span> <span class="o">@</span><span class="n">ploca</span> <span class="o">=</span> <span class="s1">&#39;_________&#39;</span><span class="p">;</span>
+</code></pre></div><p>After defining something to store and describe the board in, we declare AI is using &lsquo;o&rsquo; and the player will be playing with &lsquo;x&rsquo;. Underscores are used to represent unclaimed fields. Since MySQL isn&rsquo;t Perl or Python, we&rsquo;ll have to improvise a little and create a function to check what&rsquo;s placed on the board at a specific (row,column) position.</p>
+<div class="highlight"><pre class="chroma"><code class="language-mysql" data-lang="mysql"><span class="k">CREATE</span> <span class="n">FUNCTION</span> <span class="nf">get</span><span class="p">(</span><span class="n">instring</span> <span class="kt">VARCHAR</span><span class="p">(</span><span class="mi">255</span><span class="p">),</span> <span class="n">y</span> <span class="kt">INT</span><span class="p">,</span> <span class="n">x</span> <span class="kt">INT</span><span class="p">)</span> <span class="n">RETURNS</span> <span class="kt">CHAR</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="k">RETURN</span> <span class="nf">SUBSTRING</span><span class="p">(</span><span class="n">instring</span><span class="p">,</span> <span class="mi">3</span><span class="o">*</span><span class="p">(</span><span class="n">y</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">+</span><span class="n">x</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+</code></pre></div><p>Now we need to think of a way to display the board to the player. There is no simple print function and we are trying to display a string as a table, so this is what I could think of.</p>
+<div class="highlight"><pre class="chroma"><code class="language-mysql" data-lang="mysql"><span class="n">DELIMITER</span> <span class="err">$$</span>
+<span class="k">CREATE</span> <span class="k">PROCEDURE</span> <span class="nf">display_board</span><span class="p">(</span><span class="k">IN</span> <span class="n">l</span> <span class="kt">VARCHAR</span><span class="p">(</span><span class="mi">16</span><span class="p">))</span>
+<span class="n">BEGIN</span>
+      <span class="k">DROP</span> <span class="n">TEMPORARY</span> <span class="k">TABLE</span> <span class="k">IF</span> <span class="k">EXISTS</span> <span class="o">`</span><span class="n">tablica</span><span class="o">`</span><span class="p">;</span>
+      <span class="k">CREATE</span> <span class="n">TEMPORARY</span> <span class="k">TABLE</span> <span class="o">`</span><span class="n">tablica</span><span class="o">`</span> <span class="p">(</span><span class="n">ta</span> <span class="kt">varchar</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">bli</span> <span class="kt">varchar</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">ca</span> <span class="kt">varchar</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span>
+      <span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">tablica</span> <span class="k">VALUES</span> <span class="p">(</span><span class="nf">get</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="nf">get</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="nf">get</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">));</span>
+      <span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">tablica</span> <span class="k">VALUES</span> <span class="p">(</span><span class="nf">get</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="nf">get</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="nf">get</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">));</span>
+      <span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">tablica</span> <span class="k">VALUES</span> <span class="p">(</span><span class="nf">get</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="nf">get</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="nf">get</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">));</span>          
+      <span class="k">SELECT</span> <span class="o">*</span> <span class="k">from</span> <span class="n">tablica</span><span class="p">;</span>
+<span class="n">END</span>
+<span class="err">$$</span>
+</code></pre></div><p>We declare a temporary table, extract characters from our board-string and select it. This will print it (somewhat) nicely to the player.</p>
+<pre><code>+------+------+------+
+| ta   | bli  | ca   |
++------+------+------+
+| o    | _    | _    |
+| _    | x    | _    |
+| _    | _    | _    |
++------+------+------+
+3 rows in set (0.02 sec)
+</code></pre><h3 id="ai---making-a-respectable-oponent">AI - making a respectable oponent</h3>
+<p>This is a good time to talk about the AI. Taking the classic approach isn&rsquo;t something you do when coding for fun, so I decided to do something different. When doing something weird in a database engine, why not use it in your advantage? Basic combinatorics tells us each field can be either &lsquo;o&rsquo;, &lsquo;x&rsquo; or empty, and there are 9 fields so that&rsquo;s 3<!-- raw HTML omitted -->9<!-- raw HTML omitted --> = 19,683 possible board positions. Also, many positions are invalid - you can&rsquo;t have all x&rsquo;s because players take turns, you can&rsquo;t play after you&rsquo;ve lost etc. so the real number of valid board is much smaller (it&rsquo;s 5477).</p>
+<p>Game theory teaches us Tic-Tac-Toe can never actually be won if you pick optimal moves, so we&rsquo;ll run it once to generate a tree of best computer moves given a certain position, store it permanently in the database, and use it to defeat the puny human.</p>
+<p><img src="/img/Tic-tac-toe-game-tree.svg" alt="Tic tac toe"></p>
+<p>Each optimal move for a certain position will be stored as a table row along with its predecessor&rsquo;s id, so we can look it up and know where to move.</p>
+<pre><code>+-------+-----------+------------+------+------+--------+
+| id    | matrix    | moves_next | kraj | win  | parent |
++-------+-----------+------------+------+------+--------+
+| 32041 | oxooxxo_x | x          |    1 | o    |  32040 |
++-------+-----------+------------+------+------+--------+
+</code></pre><p>An example of a move stored in a database - this is a finished game which a computer (&lsquo;o&rsquo; player) won. Let&rsquo;s implement a function for making a move.</p>
+<div class="highlight"><pre class="chroma"><code class="language-mysql" data-lang="mysql"><span class="n">DELIMITER</span> <span class="err">$$</span>
+<span class="k">CREATE</span> <span class="k">PROCEDURE</span> <span class="nf">place_x</span><span class="p">(</span><span class="k">IN</span> <span class="n">y</span> <span class="kt">INT</span><span class="p">,</span> <span class="k">IN</span> <span class="n">x</span> <span class="kt">INT</span><span class="p">)</span>
+<span class="n">BEGIN</span>
+      <span class="k">IF</span> <span class="nf">get</span><span class="p">(</span><span class="o">@</span><span class="n">ploca</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="o">=</span> <span class="s1">&#39;_&#39;</span> <span class="k">THEN</span>   
+    <span class="k">SELECT</span> <span class="nf">concat</span><span class="p">(</span><span class="nf">substring</span><span class="p">(</span><span class="o">@</span><span class="n">ploca</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="o">*</span><span class="p">(</span><span class="n">y</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">+</span><span class="n">x</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="nf">substring</span><span class="p">(</span><span class="o">@</span><span class="n">ploca</span><span class="p">,</span> <span class="mi">3</span><span class="o">*</span><span class="p">(</span><span class="n">y</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">+</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span> <span class="k">INTO</span> <span class="o">@</span><span class="n">ploca</span><span class="p">;</span>
+    <span class="k">CALL</span> <span class="nf">display_board</span><span class="p">(</span><span class="o">@</span><span class="n">ploca</span><span class="p">);</span>
+
+        <span class="k">SELECT</span> <span class="n">id</span><span class="p">,</span><span class="n">kraj</span><span class="p">,</span><span class="n">win</span> <span class="k">FROM</span> <span class="n">tictactoe</span> <span class="k">WHERE</span> <span class="n">matrix</span><span class="o">=@</span><span class="n">ploca</span> <span class="k">AND</span> <span class="n">moves_next</span><span class="o">=</span><span class="s1">&#39;o&#39;</span> <span class="k">LIMIT</span> <span class="mi">1</span> <span class="k">INTO</span> <span class="o">@</span><span class="n">parent_id</span><span class="p">,</span> <span class="o">@</span><span class="n">kraj</span><span class="p">,</span> <span class="o">@</span><span class="n">win</span><span class="p">;</span>
+        <span class="k">SELECT</span> <span class="n">matrix</span><span class="p">,</span><span class="n">kraj</span><span class="p">,</span><span class="n">win</span> <span class="k">FROM</span> <span class="n">tictactoe</span> <span class="k">WHERE</span> <span class="n">parent</span><span class="o">=@</span><span class="n">parent_id</span> <span class="k">LIMIT</span> <span class="mi">1</span> <span class="k">INTO</span> <span class="o">@</span><span class="n">ploca</span><span class="p">,</span> <span class="o">@</span><span class="n">kraj</span><span class="p">,</span> <span class="o">@</span><span class="n">win</span><span class="p">;</span>
+    
+    <span class="k">CALL</span> <span class="nf">display_board</span><span class="p">(</span><span class="o">@</span><span class="n">ploca</span><span class="p">);</span>
+    
+    <span class="k">IF</span> <span class="o">@</span><span class="n">kraj</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">THEN</span>   
+      <span class="k">IF</span> <span class="o">@</span><span class="n">win</span> <span class="o">=</span> <span class="s1">&#39;o&#39;</span> <span class="k">THEN</span> <span class="k">SELECT</span> <span class="s1">&#39;Izgubili ste!&#39;</span> <span class="k">AS</span> <span class="s1">&#39; &#39;</span><span class="p">;</span> <span class="k">ELSE</span>  <span class="k">SELECT</span> <span class="s1">&#39;Nerijeseno. Pokusajte ponovno!&#39;</span> <span class="k">AS</span> <span class="s1">&#39; &#39;</span><span class="p">;</span> <span class="n">END</span> <span class="k">IF</span><span class="p">;</span>
+      <span class="kt">SET</span> <span class="o">@</span><span class="n">ploca</span> <span class="o">=</span> <span class="s1">&#39;_________&#39;</span><span class="p">;</span>
+      <span class="k">CALL</span> <span class="nf">display_board</span><span class="p">(</span><span class="o">@</span><span class="n">ploca</span><span class="p">);</span>
+    <span class="n">END</span> <span class="k">IF</span><span class="p">;</span>
+      <span class="n">END</span> <span class="k">IF</span><span class="p">;</span>
+<span class="n">END</span>
+<span class="err">$$</span>
+<span class="n">DELIMITER</span> <span class="p">;</span>
+</code></pre></div><h3 id="constructing-the-optimal-move-tree">Constructing the optimal move tree</h3>
+<p>If you ever saw Wargames, you probably remember the scene where the kid saves the world by making the computer play Tic-Tac-Toe with itself. The same thing is done here (minus saving the world part). Computer plays both sides, but when impersonating a human it checks all moves, not just the best one, because a human might make a mistake. To determine the best move, a recursive minimax algorithm is used, checking long-term consequence of a move (&lsquo;move&rsquo; function) and choosing the one with a best outcome.</p>
+<p>This python algorithm is ran only once; it recursively traverses the moves tree and inserts nodes as database rows. Our database could also be imported from external file, effectively eliminating any external dependencies, even if they are only a one-time thing. A single database row also contains state flags to determine if the game is over or not.</p>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python">
+<span class="c1">#!/usr/bin/python</span>
+<span class="kn">import</span> <span class="nn">itertools</span><span class="o">,</span> <span class="nn">hashlib</span><span class="o">,</span> <span class="nn">MySQLdb</span>
+
+<span class="n">ploca</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="s1">&#39;_&#39;</span> <span class="o">*</span> <span class="mi">9</span><span class="p">)</span> 
+<span class="n">db</span><span class="o">=</span><span class="n">MySQLdb</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="s1">&#39;game&#39;</span><span class="p">,</span> <span class="s1">&#39;game&#39;</span><span class="p">,</span> <span class="s1">&#39;game&#39;</span><span class="p">)</span>
+<span class="n">c</span><span class="o">=</span><span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">move</span><span class="p">(</span><span class="n">ploca</span><span class="p">,</span> <span class="n">player</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">ploca</span><span class="p">))</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span> <span class="k">return</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">4</span>
+    <span class="n">nextplayer</span> <span class="o">=</span> <span class="s1">&#39;x&#39;</span> <span class="k">if</span> <span class="n">player</span> <span class="ow">is</span> <span class="s1">&#39;o&#39;</span> <span class="k">else</span> <span class="s1">&#39;o&#39;</span> 
+    <span class="k">if</span> <span class="n">pobjednik</span><span class="p">(</span><span class="n">ploca</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="n">player</span> <span class="ow">is</span> <span class="s1">&#39;x&#39;</span> <span class="k">else</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">reslist</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">lista</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">if</span> <span class="n">provjeri_kraj</span><span class="p">(</span><span class="n">ploca</span><span class="p">):</span> <span class="k">return</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">9</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">ploca</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;_&#39;</span><span class="p">:</span> <span class="n">lista</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">lista</span><span class="p">:</span>
+        <span class="n">ploca</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="n">player</span>
+        <span class="n">ret</span><span class="p">,</span><span class="n">mov</span><span class="o">=</span><span class="n">move</span><span class="p">(</span><span class="n">ploca</span><span class="p">,</span> <span class="n">nextplayer</span><span class="p">)</span>
+        <span class="n">reslist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
+        <span class="n">ploca</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;_&#39;</span>
+
+    <span class="k">if</span> <span class="n">player</span> <span class="ow">is</span> <span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">reslist</span><span class="p">),</span><span class="n">lista</span><span class="p">[</span><span class="n">reslist</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">reslist</span><span class="p">))]</span>
+    <span class="k">else</span><span class="p">:</span> <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="n">reslist</span><span class="p">),</span><span class="n">lista</span><span class="p">[</span><span class="n">reslist</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">reslist</span><span class="p">))]</span>
+
+<span class="k">def</span> <span class="nf">moguci_potezi</span><span class="p">(</span><span class="n">ploca</span><span class="p">):</span> <span class="k">return</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">9</span><span class="p">),</span> <span class="n">ploca</span><span class="p">)</span> <span class="k">if</span> <span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">is</span> <span class="s1">&#39;_&#39;</span><span class="p">]</span>
+<span class="k">def</span> <span class="nf">provjeri_kraj</span><span class="p">(</span><span class="n">ploca</span><span class="p">):</span> <span class="k">return</span> <span class="bp">True</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">moguci_potezi</span><span class="p">(</span><span class="n">ploca</span><span class="p">))</span> <span class="k">else</span> <span class="bp">False</span>
+<span class="k">def</span> <span class="nf">igraceva_polja</span><span class="p">(</span><span class="n">igrac</span><span class="p">,</span> <span class="n">ploca</span><span class="p">):</span> <span class="k">return</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">9</span><span class="p">),</span> <span class="n">ploca</span><span class="p">)</span> <span class="k">if</span> <span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">igrac</span><span class="p">]</span>
+<span class="k">def</span> <span class="nf">nerijeseno</span><span class="p">(</span><span class="n">ploca</span><span class="p">):</span>  <span class="k">return</span> <span class="bp">True</span> <span class="k">if</span> <span class="n">provjeri_kraj</span><span class="p">(</span><span class="n">ploca</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">pobjednik</span><span class="p">(</span><span class="n">ploca</span><span class="p">)</span> <span class="k">else</span> <span class="bp">False</span>
+
+<span class="k">def</span> <span class="nf">pobjednik</span><span class="p">(</span><span class="n">ploca</span><span class="p">):</span>       
+    <span class="n">dobitne_mogucnosti</span> <span class="o">=</span> <span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">],</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">6</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">7</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">8</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">6</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">8</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">strana</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;o&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">[</span><span class="nb">len</span><span class="p">([</span><span class="n">ploca</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">j</span> <span class="k">if</span> <span class="n">ploca</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">is</span> <span class="n">strana</span><span class="p">])</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">dobitne_mogucnosti</span><span class="p">]</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span> <span class="k">return</span> <span class="n">strana</span>
+    <span class="k">return</span> <span class="bp">False</span>
+
+<span class="k">def</span> <span class="nf">povuci_potez</span><span class="p">(</span><span class="n">ploca</span><span class="p">,</span> <span class="n">strana</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
+    <span class="n">win</span> <span class="o">=</span> <span class="s1">&#39;NULL&#39;</span>
+    <span class="n">tbl</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ploca</span><span class="p">),</span> <span class="n">strana</span><span class="p">]</span>
+    
+    <span class="n">kraj</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">nerijeseno</span><span class="p">(</span><span class="n">ploca</span><span class="p">)</span> <span class="ow">or</span> <span class="n">pobjednik</span><span class="p">(</span><span class="n">ploca</span><span class="p">)</span> <span class="k">else</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">kraj</span><span class="p">:</span> <span class="n">win</span> <span class="o">=</span> <span class="n">pobjednik</span><span class="p">(</span><span class="n">ploca</span><span class="p">)</span> <span class="k">if</span> <span class="n">pobjednik</span><span class="p">(</span><span class="n">ploca</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;Tie&#39;</span>
+
+    <span class="n">tbl</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">win</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">kraj</span><span class="p">)])</span>
+    <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&#34;INSERT INTO tictactoe (matrix, moves_next, win, kraj) VALUES (&#39;{}&#39;);&#34;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&#34;&#39;, &#39;&#34;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tbl</span><span class="p">)))</span>
+    <span class="n">lastrowid</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">lastrowid</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="s1">&#39;NULL&#39;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&#34;UPDATE tictactoe SET parent=&#39;{0}&#39; WHERE id=&#39;{1}&#39;&#34;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">lastrowid</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">pobjednik</span><span class="p">(</span><span class="n">ploca</span><span class="p">)</span> <span class="ow">or</span> <span class="n">nerijeseno</span><span class="p">(</span><span class="n">ploca</span><span class="p">):</span> <span class="k">return</span>
+
+    <span class="n">slobodna_polja</span> <span class="o">=</span> <span class="n">moguci_potezi</span><span class="p">(</span><span class="n">ploca</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">strana</span> <span class="o">==</span> <span class="s1">&#39;x&#39;</span><span class="p">:</span> 
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">slobodna_polja</span><span class="p">:</span>
+            <span class="n">ploca_recursive</span><span class="o">=</span><span class="n">ploca</span><span class="p">[:]</span>
+            <span class="n">ploca_recursive</span><span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="s1">&#39;x&#39;</span>
+            <span class="n">povuci_potez</span><span class="p">(</span><span class="n">ploca_recursive</span><span class="p">,</span> <span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">lastrowid</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ploca</span><span class="p">[</span><span class="n">move</span><span class="p">(</span><span class="n">ploca</span><span class="p">,</span> <span class="s1">&#39;o&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="s1">&#39;o&#39;</span>
+        <span class="n">povuci_potez</span><span class="p">(</span><span class="n">ploca</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">lastrowid</span><span class="p">)</span>
+
+<span class="n">povuci_potez</span><span class="p">(</span><span class="n">ploca</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;NULL&#39;</span><span class="p">)</span>
+
+</code></pre></div><h3 id="making-it-fancy">Making it fancy</h3>
+<p>That&rsquo;s all nice, it works, but one more thing&hellip; can we make it 3D, just for fun? Mysql can execute shell commands, but apparently you can&rsquo;t pipe anything through shell scripts. Let&rsquo;s use a trick - very often it produces long, long tables, and to facilitate looking at the data you can set a <em>pager</em> - something it will pipe your output through, like <em>less</em> or your favorite editor. Why not using that and piping it through &hellip; figlet! One apt-get install figlet later, finding a cool looking 3d font and a little sed to strip everything not important and we&rsquo;re left with this.</p>
+<div class="highlight"><pre class="chroma"><code class="language-mysql" data-lang="mysql"><span class="n">mysql</span><span class="o">&gt;</span> <span class="n">pager</span> <span class="n">sed</span> <span class="o">-</span><span class="n">e</span> <span class="s1">&#39;s/| ta   | bli  | ca   |//g&#39;</span> <span class="o">-</span><span class="n">e</span> <span class="s1">&#39;s/  \+/ /g&#39;</span> <span class="o">-</span><span class="n">e</span> <span class="s1">&#39;s/[+\-]//g&#39;</span> <span class="o">-</span><span class="n">e</span> <span class="s1">&#39;/^$/d&#39;</span> <span class="o">|</span> <span class="n">figlet</span> <span class="o">-</span><span class="n">f</span> <span class="s1">&#39;larry3d.flf&#39;</span>
+<span class="n">mysql</span><span class="o">&gt;</span> <span class="k">call</span> <span class="nf">place_x</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">);</span>
+</code></pre></div><pre><code> __                  __                  __                   __       
+/\ \                /\ \                /\ \                 /\ \      
+\ \ \        ___    \ \ \       __  _   \ \ \                \ \ \     
+ \ \ \      / __`\   \ \ \     /\ \/'\   \ \ \                \ \ \    
+  \ \ \    /\ \L\ \   \ \ \    \/&gt;  &lt;/    \ \ \                \ \ \   
+   \ \ \   \ \____/    \ \ \    /\_/\_\    \ \ \                \ \ \  
+    \ \ \   \/___/      \ \ \   \//\/_/     \ \ \      _______   \ \ \ 
+     \ \_\               \ \_\               \ \_\    /\______\   \ \_\
+      \/_/                \/_/                \/_/    \/______/    \/_/
+ __                   __                  __                  __       
+/\ \                 /\ \                /\ \                /\ \      
+\ \ \                \ \ \        ___    \ \ \       __  _   \ \ \     
+ \ \ \                \ \ \      / __`\   \ \ \     /\ \/'\   \ \ \    
+  \ \ \                \ \ \    /\ \L\ \   \ \ \    \/&gt;  &lt;/    \ \ \   
+   \ \ \                \ \ \   \ \____/    \ \ \    /\_/\_\    \ \ \  
+    \ \ \      _______   \ \ \   \/___/      \ \ \   \//\/_/     \ \ \ 
+     \ \_\    /\______\   \ \_\               \ \_\               \ \_\
+      \/_/    \/______/    \/_/                \/_/                \/_/
+ __                  __                  __                  __       
+/\ \                /\ \                /\ \                /\ \      
+\ \ \       __  _   \ \ \        ___    \ \ \       __  _   \ \ \     
+ \ \ \     /\ \/'\   \ \ \      / __`\   \ \ \     /\ \/'\   \ \ \    
+  \ \ \    \/&gt;  &lt;/    \ \ \    /\ \L\ \   \ \ \    \/&gt;  &lt;/    \ \ \   
+   \ \ \    /\_/\_\    \ \ \   \ \____/    \ \ \    /\_/\_\    \ \ \  
+    \ \ \   \//\/_/     \ \ \   \/___/      \ \ \   \//\/_/     \ \ \ 
+     \ \_\               \ \_\               \ \_\               \ \_\
+      \/_/                \/_/                \/_/                \/_/
+</code></pre><p>Check out the video (HTML5 - webm):</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+    
+      
+      
+    
+    
+  
+
+
+
+<video controls preload="auto" width="100%" class="html-video">
+  
+    <source src="/2014/10/tic-tac-toe-in-...-mysql/tictactoe.webm" type="video/webm" }}>
+    
+  
+  
+  
+  <p></p>
+</video>
+
+
+<p>Awesome!</p>
+                    </div>
+                </section>
+                
+                <h1 class="content-subhead">27 Sep 2014, 16:37</h1>
+                <section class="post">
+                    <header class="post-header">
+
+                        <a href="https://blog.hrvoje.org/2014/09/my-friends-2048-version/" class="post-title">My friend&#39;s 2048 version</a>
+
+                        <p class="post-meta">
+                            
+                            
+                        </p>
+                    </header>
+
+                    <div class="post-description">
+                        <p>Recently I tried implementing a cool game called 2048 in Python and make it as short as possible. Thinking I did a decent job, I challenged a friend to give it a go. Blown away how much shorter it turned out to be, all I can say is - kudos to Veky.</p>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python">
+<span class="kn">import</span> <span class="nn">random</span> <span class="kn">as</span> <span class="nn">R</span><span class="o">,</span><span class="nn">tkinter</span> <span class="kn">as</span> <span class="nn">T</span>
+<span class="k">def</span> <span class="nf">M</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">q</span><span class="o">=</span><span class="k">lambda</span> <span class="n">m</span><span class="p">:</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">list</span><span class="p">,</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">m</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]))),</span><span class="n">u</span><span class="o">=</span><span class="p">{</span><span class="s2">&#34;key&#34;</span><span class="p">:</span><span class="nb">bool</span><span class="p">,</span><span class="s2">&#34;reverse&#34;</span><span class="p">:</span><span class="mi">1</span><span class="p">}):</span>
+ <span class="n">m</span><span class="o">=</span><span class="n">b</span>
+ <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="o">-</span><span class="n">n</span><span class="p">):</span><span class="n">m</span><span class="o">=</span><span class="n">q</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+ <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">m</span><span class="p">:</span>
+  <span class="n">r</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="o">**</span><span class="n">u</span><span class="p">)</span>
+  <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+   <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">==</span><span class="n">r</span><span class="p">[</span><span class="n">j</span><span class="p">]:</span><span class="n">r</span><span class="p">[</span><span class="n">j</span><span class="p">:</span><span class="n">j</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span><span class="o">=</span><span class="mi">2</span><span class="o">*</span><span class="n">r</span><span class="p">[</span><span class="n">j</span><span class="p">],</span><span class="mi">0</span>
+  <span class="n">r</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="o">**</span><span class="n">u</span><span class="p">)</span>
+ <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span><span class="n">m</span><span class="o">=</span><span class="n">q</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+ <span class="k">return</span> <span class="n">m</span><span class="o">*</span><span class="p">(</span><span class="n">m</span><span class="o">!=</span><span class="n">b</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">A</span><span class="p">(</span><span class="n">q</span><span class="o">=</span><span class="mi">8</span><span class="o">**</span><span class="mi">8</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+ <span class="n">k</span><span class="p">,</span><span class="n">l</span><span class="o">=</span><span class="n">R</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="nb">divmod</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span><span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">b</span><span class="p">,[]))</span><span class="k">if</span> <span class="ow">not</span> <span class="n">j</span><span class="p">])</span>
+ <span class="n">b</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">l</span><span class="p">]</span><span class="o">=</span><span class="n">R</span><span class="o">.</span><span class="n">choice</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+ <span class="k">for</span> <span class="n">l</span><span class="p">,</span><span class="n">d</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">L</span><span class="p">,</span><span class="nb">sum</span><span class="p">(</span><span class="n">b</span><span class="p">,[])):</span><span class="n">l</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">d</span> <span class="ow">or</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="n">bg</span><span class="o">=</span><span class="s1">&#39;#&#39;</span><span class="o">+</span><span class="n">format</span><span class="p">(</span><span class="n">q</span><span class="o">-</span><span class="n">d</span><span class="o">*</span><span class="mi">999</span><span class="p">,</span><span class="s2">&#34;06x&#34;</span><span class="p">))</span>
+<span class="k">def</span> <span class="nf">K</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+ <span class="n">c</span><span class="o">=</span><span class="n">M</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">Left</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">Up</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">Right</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">Down</span><span class="o">=</span><span class="mi">3</span><span class="p">)[</span><span class="n">e</span><span class="o">.</span><span class="n">keysym</span><span class="p">])</span>
+ <span class="k">if</span> <span class="n">c</span><span class="p">:</span><span class="n">b</span><span class="p">[:]</span><span class="o">=</span><span class="n">c</span><span class="p">;</span><span class="n">A</span><span class="p">()</span>
+ <span class="nb">any</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">M</span><span class="p">,</span><span class="n">F</span><span class="p">))</span><span class="ow">or</span><span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">bg</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;&lt;E2&gt;&lt;98&gt;&lt;B9&gt;&#39;</span><span class="p">)</span><span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">L</span><span class="p">]</span>
+<span class="n">F</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">);</span><span class="n">b</span><span class="p">,</span><span class="n">t</span><span class="o">=</span><span class="p">[</span><span class="mi">4</span><span class="o">*</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">F</span><span class="p">],</span><span class="n">T</span><span class="o">.</span><span class="n">Tk</span><span class="p">();</span><span class="n">t</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+<span class="n">L</span><span class="o">=</span><span class="p">[</span><span class="n">T</span><span class="o">.</span><span class="n">Button</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">height</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">width</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span><span class="n">font</span><span class="o">=</span><span class="p">(</span><span class="s2">&#34;Helvetica&#34;</span><span class="p">,</span><span class="mi">24</span><span class="p">))</span><span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="mi">4</span><span class="o">*</span><span class="n">F</span><span class="p">]</span>
+<span class="p">[</span><span class="n">L</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="mi">4</span><span class="o">+</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">i</span><span class="p">,</span><span class="n">column</span><span class="o">=</span><span class="n">j</span><span class="p">)</span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">F</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">F</span><span class="p">]</span>
+<span class="n">A</span><span class="p">();</span><span class="n">t</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s1">&#39;&lt;Key&gt;&#39;</span><span class="p">,</span><span class="n">K</span><span class="p">);</span><span class="n">t</span><span class="o">.</span><span class="n">mainloop</span><span class="p">()</span>
+
+
+</code></pre></div>
+                    </div>
+                </section>
+                
+            </div>
+            
+<div class="pagination">
+  <nav role="pagination" class="post-list-pagination">
+      
+      <a href="/" class="post-list-pagination-item pure-button post-list-pagination-item-prev">
+        <i class="fa fa-angle-double-left"></i>&nbsp;Newer
+      </a>
+      
+    <span class="post-list-pagination-item post-list-pagination-item-current">Page 2 of 3</span>
+    
+      <a href="/page/3/" class="post-list-pagination-item pure-button post-list-pagination-item-next">
+        Older&nbsp;<i class="fa fa-angle-double-right"></i>
+      </a>
+    
+  </nav>
+</div>
+
+
+            <div class="footer">
+    <div class="pure-menu pure-menu-horizontal pure-menu-open">
+        <ul>
+            <li>Powered by <a class="hugo" href="https://gohugo.io/" target="_blank">hugo</a></li>
+        </ul>
+    </div>
+</div>
+
+
+        </div>
+    </div>
+</div>
+
+
+<script>
+</script>
+
+
+</body>
+</html>

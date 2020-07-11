@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hrvoje&#39;s Blog &middot; Hrvoje&#39;s Blog</title>
+
+    <meta name="description" content="It&#39;s only ones and zeros">
+
+    <meta name="generator" content="Hugo 0.73.0" />
+    <meta name="twitter:card" content="summary">
+    
+    <meta name="twitter:title" content="Hrvoje&#39;s Blog &middot; Hrvoje&#39;s Blog">
+    <meta name="twitter:description" content="It&#39;s only ones and zeros">
+
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Hrvoje&#39;s Blog &middot; Hrvoje&#39;s Blog">
+    <meta property="og:description" content="It&#39;s only ones and zeros">
+
+    <link href='//fonts.googleapis.com/css?family=Source+Sans+Pro:400,700|Oxygen:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pure/0.6.0/pure-min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pure/0.6.0/grids-responsive-min.css">
+
+    <link rel="stylesheet" href='https://blog.hrvoje.org/css/all.min.css'>
+    <link rel="stylesheet" href='https://blog.hrvoje.org/css/syntax.css'>
+
+    <link rel="alternate" type="application/rss+xml" title="Hrvoje&#39;s Blog" href='https://blog.hrvoje.org/index.xml' />
+</head>
+<body>
+
+
+<div id="layout" class="pure-g">
+    <div class="sidebar pure-u-1 pure-u-md-1-6">
+    <div class="header">
+        <hgroup>
+            <h1 class="brand-title"><a href="https://blog.hrvoje.org/">Hrvoje&#39;s Blog</a></h1>
+            <h2 class="brand-tagline"> It&#39;s only ones and zeros </h2>
+        </hgroup>
+        <nav class="nav">
+            <ul class="nav-list">
+                
+                <li class="nav-item">
+                    <a class="pure-button" href="https://www.linkedin.com/in/hcavrak">
+                        <i class="icon-linkedin"></i> LinkedIn
+                    </a>
+                </li>
+                
+                
+                <li class="nav-item">
+                    <a class="pure-button" href="https://twitter.com/hcavrak">
+                        <i class="icon-twitter"></i>Twitter
+                    </a>
+                </li>
+                
+                
+                <li class="nav-item">
+                    <a class="pure-button" href="https://github.com/hrvach">
+                        <i class="icon-github"></i>Github
+                    </a>
+                </li>
+                
+                
+                <li class="nav-item">
+                    <a class="pure-button" href='https://blog.hrvoje.org/index.xml'>
+                        <i class="icon-rss"></i> rss
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+
+
+    <div class="content pure-u-1 pure-u-md-2-3">
+        <div>
+            
+            <div class="posts">
+                
+                <h1 class="content-subhead">20 May 2020, 20:58</h1>
+                <section class="post">
+                    <header class="post-header">
+
+                        <a href="https://blog.hrvoje.org/2020/05/drawing-circles/" class="post-title">Drawing Circles</a>
+
+                        <p class="post-meta">
+                            
+                            
+                                
+                            
+                        </p>
+                    </header>
+
+                    <div class="post-description">
+                        <p>Embedded programming, microcontrollers and FPGAs have always been
+incredibly appealing to me. Why? Probably because they emphasize
+things about development and design that I personally believe to be
+very important - keeping things short, efficient and simple.</p>
+<p>Recently, I needed to draw circles with as little code as possible
+which always get me into the &ldquo;is there a better way&rdquo; mode. The
+traditional approach would be simply to use the</p>
+<p><img src="/img/circles-eq0.svg" alt=""></p>
+<p>equation and if the squared coordinates sum up to the squared radius,
+the point lies on the circle. Yet, to calculate y from an arbitrary x,
+you need multiplication and square roots - things not exactly trivial
+in the world of simple tiny chips.</p>
+<h2 id="minskys-circle-algorithm">Minsky&rsquo;s Circle Algorithm</h2>
+<p>There is a cool solution to this problem called the Minsky&rsquo;s circle
+algorithm. The algorithm was stumbled upon in 1960s and is incredibly
+simple.</p>
+<p><img src="/img/circles-eq1.svg" alt=""><br>
+<img src="/img/circles-eq2.svg" alt=""></p>
+<p>Original idea was using the old value of x to draw a spiral shape, but
+the programmer made a mistake and used the new value of x - the output
+was, mysteriously, a circle. If you use the new value of x, then the
+expression becomes</p>
+<p><img src="/img/circles-eq1.svg" alt=""><br>
+<img src="/img/circles-eq3.svg" alt=""></p>
+<p>It resembles a rotation matrix</p>
+<p><img src="/img/rotation_matrix.svg" alt=""></p>
+<p>because for small angles <em>cos</em> is close to 1 and <em>sin</em> is close to 0:</p>
+<p><img src="/img/circles-eq4.svg" alt=""></p>
+<p>Since its <a href="https://en.wikipedia.org/wiki/Determinant">determinant</a> is
+equal to 1, there is no scaling and the curve ends up being closed
+after a number of iterations.  Instead of multiplying by an arbitrary,
+small number ε, we multiply by a negative power of two which is
+essentially equal as dividing by a power of two. This is approximated
+using right shifts (2^-4 is chosen for this example).  The expression
+now becomes really simple:</p>
+<p><img src="/img/circles-eq5.svg" alt=""></p>
+<p>Bit shifts are very efficient, and in ASIC/FPGA world they can even be
+free (if implemented through wire routing). This provides a good
+result, but not entirely accurate. Is there a way that&rsquo;s just as
+simple, yet more accurate?</p>
+<h2 id="improvement">Improvement</h2>
+<p>A more recent approach by Neal and Pitteway (1990) substantially improved
+the accuracy. Minsky&rsquo;s algorithms actually produces an ellipse tilted
+at 45 degrees that highly resembles a circle. Distance to the circle
+varies, so to compensate they introduce a second ellipse perpendicular
+to the original one, and perform half rotation against each of them.</p>
+<p><img src="/img/circles-eq6.svg" alt=""></p>
+<p>This reduces maximal distance from the actual circle by several orders
+of magnitude.</p>
+<h2 id="can-we-do-even-better">Can we do even better?</h2>
+<p>Accuracy is already way better than any specifications required, but
+the fun is in trying to make it even better. Let&rsquo;s take this idea
+further with something like:</p>
+<p><img src="/img/circles-eq8.svg" alt=""></p>
+<p>Keeping two pairs of coordinates does slightly increase the memory and
+computational load, but sticking to bit shifts and additions retains
+the benefits provided by the original algorithm. If a large radius
+(2^32) is used and ε set to 2^-12, max distance from a true circle in
+this particular case is &lt; 14, which is only a few nanometers to a
+meter.  Still not exact, but accurate enough for most practical
+applications one could think of.</p>
+<p>This also provides accurate trig functions - simply put the decimal
+point before the MSB bit and treat the rest as sin (y) and cos (x)
+values. Handy!</p>
+<h2 id="comparison">Comparison</h2>
+<p>Errors - the distances from the exact circle for the three methods are
+plotted and log scale is used to compensate for them being very far
+apart.  Original method (blue) caps around 10^6, second one (red)
+around 10^3 and the third (green) around 10^1. And who said math isn&rsquo;t
+amazing, fun and useful?</p>
+<figure>
+    <img src="/img/error_plot_logscale.png" width="800"/> 
+</figure>
+
+
+                    </div>
+                </section>
+                
+                <h1 class="content-subhead">03 Dec 2015, 11:47</h1>
+                <section class="post">
+                    <header class="post-header">
+
+                        <a href="https://blog.hrvoje.org/2015/12/the-eagle-has-landed/" class="post-title">The Eagle Has Landed</a>
+
+                        <p class="post-meta">
+                            
+                            
+                                
+                            
+                        </p>
+                    </header>
+
+                    <div class="post-description">
+                        <p><img src="/img/orao-emulator-small.png?style=rightimg" alt=""></p>
+<p>The year was 1984. Apple Macintosh was just introduced, as well as our own
+shiny new computer called &ldquo;Orao&rdquo; (Eagle). It ended up being chosen as a
+standard primary school computer in Croatia from 1985 to 1991. For many of us,
+kids back then, this was one of the first opportunities to ever use a computer.
+Simple and rudimentary by today&rsquo;s standards, Orao was brilliantly designed to
+avoid using specialized components - only simple TTL logic and off-the-shelf
+parts were used.</p>
+<p>I wanted to write a cross-platform emulator, and after making one in Python,
+decided to go a step further and port it to Javascript. This is perhaps the
+most convenient way to use it, even though not all features were ported. To
+invoke BASIC, enter &ldquo;BC&rdquo; after booting. It can fetch one of the available tape
+images as .wav files via AJAX and load them. Loading takes time, computers
+were slow back then. :-)</p>
+<p>For a slightly more complete version, check the
+<a href="https://github.com/hrvach/OraoPy">Python version</a>, but if you just want a
+quick dose of nostalgia - <a href="http://orao.hrvoje.org">HERE</a> it is!</p>
+<p>TL;DR: enter BC at the * (star) prompt, press ENTER when asked about the memory
+size and try one of the following:</p>
+<pre><code>LMEM &quot;SPACEINV&quot;
+LMEM &quot;CRVIC&quot;
+LMEM &quot;MUZIKA&quot;
+LMEM &quot;DEMO2&quot;
+LMEM &quot;RUSENJE&quot;
+LMEM &quot;TETRIS&quot; (start with LNK4096)
+</code></pre><p>Double quotes = shift + 2. To erase something, use ctrl + H or left arrow.</p>
+
+                    </div>
+                </section>
+                
+                <h1 class="content-subhead">15 Jul 2015, 15:29</h1>
+                <section class="post">
+                    <header class="post-header">
+
+                        <a href="https://blog.hrvoje.org/2015/07/ghost-ship/" class="post-title">Ghost Ship</a>
+
+                        <p class="post-meta">
+                            
+                            
+                                
+                            
+                        </p>
+                    </header>
+
+                    <div class="post-description">
+                        <p>Lately I&rsquo;ve been solving some problems on <a href="http://www.checkio.org">CheckiO</a>, a really addictive programming site, and stumbled upon a very interesting golf mission. So, you might ask: &ldquo;What are golf missions?!&rdquo;. The idea is to solve the problem using as little code as theoretically possible. Your score is inversely related to code length and transforms a mildly challenging problem into a very addictive one.</p>
+<p>One of the most interesting missions is called <a href="www.checkio.org/mission/ghost-detect/">Ghost Detect</a>. It might not seem special at first, but it gets tricky as solutions get shorter. The mission goal is to write the shortest possible code to recognize if three consecutive signals sent in binary are of the same length. 11000001100011 is a good signal while 111000100011 is a bad one. There is at least one zero between every group of ones. For each character used (less than 200) you earn 1 point. So, how do we do this?</p>
+<h4 id="1-use-regex-77-characters-123-points">1. Use regex (77 characters, 123 points)</h4>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">re</span>
+<span class="n">recognize</span><span class="o">=</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span><span class="nb">len</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^0b(1+)0+\1{1}0+\1{1}$&#39;</span><span class="p">,</span><span class="nb">bin</span><span class="p">(</span><span class="n">t</span><span class="p">)))</span>
+</code></pre></div><p>We find and group zeros at the beginning, followed by at least one zero, and then find exactly one occurence of the first group, then some more zeros etc. Not too complicated, but only 123 points. Can we do better?</p>
+<h4 id="2-use-the-sets-luke-63-characters-137-points">2. Use the sets, Luke (63 characters, 137 points)</h4>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">re</span>
+<span class="n">recognize</span><span class="o">=</span><span class="k">lambda</span> <span class="n">w</span><span class="p">:</span><span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;1+&#39;</span><span class="p">,</span><span class="nb">bin</span><span class="p">(</span><span class="n">w</span><span class="p">))))</span><span class="o">&lt;</span><span class="mi">2</span>
+</code></pre></div><p>Here we combine regex and sets to check how many different groups of repeating ones are present in binary representation.</p>
+<h4 id="3-ditch-the-regex-57-characters-143-points">3. Ditch the regex (57 characters, 143 points)</h4>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="n">recognize</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="nb">bin</span><span class="p">(</span><span class="n">x</span><span class="p">)[</span><span class="mi">2</span><span class="p">:]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;0&#39;</span><span class="p">))</span><span class="o">-</span><span class="p">{</span><span class="s1">&#39;&#39;</span><span class="p">})</span><span class="o">&lt;</span><span class="mi">2</span>
+</code></pre></div><p>This is about as far as a &ldquo;Pythonic&rdquo; road will take you. Split on zeros, convert to sets, remove empty set to avoid messing with the count and check if less than two.</p>
+<h3 id="now-what">Now what?</h3>
+<p>To further shorten it, we need to try a different approach - binary.
+In binary, when you multiply by 2, you shift all the bits one position
+to the left. So, for example, 00010 multiplied by 2 becomes 00100. A
+valid signal, according to the task, is a number with three groups of
+ones equally long with zeros inbetween. This actually means it&rsquo;s made
+of a number multiplied by a power of two, then the same number was
+multiplied by some other power of two and added, and then the same
+number was added again. For example, 111000111000111 is actually
+<img src="/img/d9a80334debf2785aba1a4753d3d35da.svg" alt=""></p>
+<p>Therefore, we can write a generalized form for such a number n being equal to</p>
+<p><img src="/img/1b6db3065d555d4a9700385ab2960ddc.svg?style=centerimg" alt="">
+<img src="/img/5e5e9d7474621935430829ddfce71f15.svg?style=centerimg" alt=""></p>
+<p>The number should, then, be divisible by both k and r without reminder. First variant that comes to mind is to test if n divided by k equals r. But we have neither k nor r, and the only thing we have to work with is the number given to our function. We have to think of a way to get the number using bit manipulation.</p>
+<pre><code>n       = 111000111000111
+n+1     = 111000111001000
+------------------------- XOR
+n^n+1   = 000000000001111
+n       = 111000111000111 
+------------------------- AND
+n&amp;n^n+1 = 000000000000111
+</code></pre><p>So, now we have k with some bit tricks expressed like n AND n XOR n+1. To find r, we divide n by k and realize it&rsquo;s basically the original number with sequences of ones reduced to a single 1. We can achieve this too with a little bit manipulation.</p>
+<pre><code>n       =  111000111000111
+n*2     = 1110001110001110
+-------------------------- AND
+n&amp;n*2   =  110000110000110
+n       =  111000111000111
+-------------------------- XOR
+2*n&amp;n^n =    1000001000001
+</code></pre><h4 id="4-bit-banging">4. Bit banging:</h4>
+<p>We are testing for this simple expression.</p>
+<p><img src="/img/e9fbfa5334a48846d45b79047a976e6e.svg?style=centerimg" alt=""></p>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="n">recognize</span><span class="o">=</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span><span class="n">n</span><span class="o">/</span><span class="p">(</span><span class="n">n</span><span class="o">&amp;</span><span class="n">n</span><span class="o">^</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">==</span><span class="mi">2</span><span class="o">*</span><span class="n">n</span><span class="o">&amp;</span><span class="n">n</span><span class="o">^</span><span class="n">n</span>
+</code></pre></div><p>Down to 39 characters and 161 points. Can we do even better? Suprisingly, yes!</p>
+<h4 id="5-getting-rid-of-k">5. Getting rid of k</h4>
+<div class="highlight"><pre class="chroma"><code class="language-python" data-lang="python"><span class="n">recognize</span><span class="o">=</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span><span class="n">n</span><span class="o">%</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">n</span><span class="o">&amp;</span><span class="n">n</span><span class="o">^</span><span class="n">n</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span>
+</code></pre></div><p>If we test divisibility by k, it is easy to construct a number divisible by k which doesn&rsquo;t satisfy the constraint - e.g. 110011110011. Therefore, we must test divisibility by the other factor, r. Since zeros between the ones are ensured by initial conditions, divisibility by r guarantees the required form.</p>
+<p>Our solution is now only 33 characters long (function definition takes 19), and we scored 167 points. There is a trick to get 2 more points which I&rsquo;m not going to disclose. Can you find it?</p>
+<h4 id="can-we-go-above-169">Can we go above 169?</h4>
+<p>I don&rsquo;t think so, but please tell me if you think of a way! :) Hopefully you enjoyed reading about it as much as I&rsquo;ve enjoyed solving it! If you have another, original solution to this problem feel free to email me and help my curiosity!</p>
+<p>Cheers.</p>
+                    </div>
+                </section>
+                
+            </div>
+            
+<div class="pagination">
+  <nav role="pagination" class="post-list-pagination">
+      
+    <span class="post-list-pagination-item post-list-pagination-item-current">Page 1 of 3</span>
+    
+      <a href="/page/2/" class="post-list-pagination-item pure-button post-list-pagination-item-next">
+        Older&nbsp;<i class="fa fa-angle-double-right"></i>
+      </a>
+    
+  </nav>
+</div>
+
+
+            <div class="footer">
+    <div class="pure-menu pure-menu-horizontal pure-menu-open">
+        <ul>
+            <li>Powered by <a class="hugo" href="https://gohugo.io/" target="_blank">hugo</a></li>
+        </ul>
+    </div>
+</div>
+
+
+        </div>
+    </div>
+</div>
+
+
+<script>
+</script>
+
+
+</body>
+</html>
