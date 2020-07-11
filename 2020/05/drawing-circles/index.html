@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drawing Circles &middot; Hrvoje&#39;s Blog</title>
+
+    <meta name="description" content="">
+
+    <meta name="generator" content="Hugo 0.73.0" />
+    <meta name="twitter:card" content="summary">
+    
+    <meta name="twitter:title" content="Drawing Circles &middot; Hrvoje&#39;s Blog">
+    <meta name="twitter:description" content="">
+
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Drawing Circles &middot; Hrvoje&#39;s Blog">
+    <meta property="og:description" content="">
+
+    <link href='//fonts.googleapis.com/css?family=Source+Sans+Pro:400,700|Oxygen:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pure/0.6.0/pure-min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pure/0.6.0/grids-responsive-min.css">
+
+    <link rel="stylesheet" href='https://blog.hrvoje.org/css/all.min.css'>
+    <link rel="stylesheet" href='https://blog.hrvoje.org/css/syntax.css'>
+
+    <link rel="alternate" type="application/rss+xml" title="Hrvoje&#39;s Blog" href='https://blog.hrvoje.org/index.xml' />
+</head>
+<body>
+
+
+<div id="layout" class="pure-g">
+    <div class="sidebar pure-u-1 pure-u-md-1-6">
+    <div class="header">
+        <hgroup>
+            <h1 class="brand-title"><a href="https://blog.hrvoje.org/">Hrvoje&#39;s Blog</a></h1>
+            <h2 class="brand-tagline"> It&#39;s only ones and zeros </h2>
+        </hgroup>
+        <nav class="nav">
+            <ul class="nav-list">
+                
+                <li class="nav-item">
+                    <a class="pure-button" href="https://www.linkedin.com/in/hcavrak">
+                        <i class="icon-linkedin"></i> LinkedIn
+                    </a>
+                </li>
+                
+                
+                <li class="nav-item">
+                    <a class="pure-button" href="https://twitter.com/hcavrak">
+                        <i class="icon-twitter"></i>Twitter
+                    </a>
+                </li>
+                
+                
+                <li class="nav-item">
+                    <a class="pure-button" href="https://github.com/hrvach">
+                        <i class="icon-github"></i>Github
+                    </a>
+                </li>
+                
+                
+                <li class="nav-item">
+                    <a class="pure-button" href='https://blog.hrvoje.org/index.xml'>
+                        <i class="icon-rss"></i> rss
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+
+
+    <div class="content pure-u-1 pure-u-md-3-4">
+        <div>
+            
+            <div class="posts">
+                <h1 class="content-subhead">20 May 2020, 20:58</h1>
+                <section class="post">
+                    <header class="post-header">
+
+                        <a href="https://blog.hrvoje.org/2020/05/drawing-circles/" class="post-title">Drawing Circles</a>
+
+                        <p class="post-meta">
+                            
+                            
+                                under 
+                                
+                            
+                        </p>
+                    </header>
+                    
+                    <div class="post-share">
+                        <div class="post-share-links">
+                            <h4 style="">Share</h4>
+                            
+                            
+                            
+                            
+                        </div>
+                    </div>
+                    
+                    <div class="post-description">
+                        <p>Embedded programming, microcontrollers and FPGAs have always been
+incredibly appealing to me. Why? Probably because they emphasize
+things about development and design that I personally believe to be
+very important - keeping things short, efficient and simple.</p>
+<p>Recently, I needed to draw circles with as little code as possible
+which always get me into the &ldquo;is there a better way&rdquo; mode. The
+traditional approach would be simply to use the</p>
+<p><img src="/img/circles-eq0.svg" alt=""></p>
+<p>equation and if the squared coordinates sum up to the squared radius,
+the point lies on the circle. Yet, to calculate y from an arbitrary x,
+you need multiplication and square roots - things not exactly trivial
+in the world of simple tiny chips.</p>
+<h2 id="minskys-circle-algorithm">Minsky&rsquo;s Circle Algorithm</h2>
+<p>There is a cool solution to this problem called the Minsky&rsquo;s circle
+algorithm. The algorithm was stumbled upon in 1960s and is incredibly
+simple.</p>
+<p><img src="/img/circles-eq1.svg" alt=""><br>
+<img src="/img/circles-eq2.svg" alt=""></p>
+<p>Original idea was using the old value of x to draw a spiral shape, but
+the programmer made a mistake and used the new value of x - the output
+was, mysteriously, a circle. If you use the new value of x, then the
+expression becomes</p>
+<p><img src="/img/circles-eq1.svg" alt=""><br>
+<img src="/img/circles-eq3.svg" alt=""></p>
+<p>It resembles a rotation matrix</p>
+<p><img src="/img/rotation_matrix.svg" alt=""></p>
+<p>because for small angles <em>cos</em> is close to 1 and <em>sin</em> is close to 0:</p>
+<p><img src="/img/circles-eq4.svg" alt=""></p>
+<p>Since its <a href="https://en.wikipedia.org/wiki/Determinant">determinant</a> is
+equal to 1, there is no scaling and the curve ends up being closed
+after a number of iterations.  Instead of multiplying by an arbitrary,
+small number ε, we multiply by a negative power of two which is
+essentially equal as dividing by a power of two. This is approximated
+using right shifts (2^-4 is chosen for this example).  The expression
+now becomes really simple:</p>
+<p><img src="/img/circles-eq5.svg" alt=""></p>
+<p>Bit shifts are very efficient, and in ASIC/FPGA world they can even be
+free (if implemented through wire routing). This provides a good
+result, but not entirely accurate. Is there a way that&rsquo;s just as
+simple, yet more accurate?</p>
+<h2 id="improvement">Improvement</h2>
+<p>A more recent approach by Neal and Pitteway (1990) substantially improved
+the accuracy. Minsky&rsquo;s algorithms actually produces an ellipse tilted
+at 45 degrees that highly resembles a circle. Distance to the circle
+varies, so to compensate they introduce a second ellipse perpendicular
+to the original one, and perform half rotation against each of them.</p>
+<p><img src="/img/circles-eq6.svg" alt=""></p>
+<p>This reduces maximal distance from the actual circle by several orders
+of magnitude.</p>
+<h2 id="can-we-do-even-better">Can we do even better?</h2>
+<p>Accuracy is already way better than any specifications required, but
+the fun is in trying to make it even better. Let&rsquo;s take this idea
+further with something like:</p>
+<p><img src="/img/circles-eq8.svg" alt=""></p>
+<p>Keeping two pairs of coordinates does slightly increase the memory and
+computational load, but sticking to bit shifts and additions retains
+the benefits provided by the original algorithm. If a large radius
+(2^32) is used and ε set to 2^-12, max distance from a true circle in
+this particular case is &lt; 14, which is only a few nanometers to a
+meter.  Still not exact, but accurate enough for most practical
+applications one could think of.</p>
+<p>This also provides accurate trig functions - simply put the decimal
+point before the MSB bit and treat the rest as sin (y) and cos (x)
+values. Handy!</p>
+<h2 id="comparison">Comparison</h2>
+<p>Errors - the distances from the exact circle for the three methods are
+plotted and log scale is used to compensate for them being very far
+apart.  Original method (blue) caps around 10^6, second one (red)
+around 10^3 and the third (green) around 10^1. And who said math isn&rsquo;t
+amazing, fun and useful?</p>
+<figure>
+    <img src="/img/error_plot_logscale.png" width="800"/> 
+</figure>
+
+
+                    </div>
+                    
+                </section>
+            </div>
+            <div class="footer">
+    <div class="pure-menu pure-menu-horizontal pure-menu-open">
+        <ul>
+            <li>Powered by <a class="hugo" href="https://gohugo.io/" target="_blank">hugo</a></li>
+        </ul>
+    </div>
+</div>
+
+
+        </div>
+    </div>
+</div>
+
+
+<script>
+</script>
+
+
+</body>
+</html>
