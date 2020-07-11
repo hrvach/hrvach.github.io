@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <url>
+    <loc>https://blog.hrvoje.org/2020/05/drawing-circles/</loc>
+    <lastmod>2020-05-20T20:58:30+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://blog.hrvoje.org/</loc>
+    <lastmod>2020-05-20T20:58:30+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://blog.hrvoje.org/posts/</loc>
+    <lastmod>2020-05-20T20:58:30+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://blog.hrvoje.org/2015/12/the-eagle-has-landed/</loc>
+    <lastmod>2015-12-03T11:47:55+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://blog.hrvoje.org/2015/07/ghost-ship/</loc>
+    <lastmod>2015-07-15T15:29:34+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://blog.hrvoje.org/2015/01/cookie-math/</loc>
+    <lastmod>2015-01-17T15:53:09+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://blog.hrvoje.org/2014/10/tic-tac-toe-in-...-mysql/</loc>
+    <lastmod>2014-10-05T17:25:44+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://blog.hrvoje.org/2014/09/my-friends-2048-version/</loc>
+    <lastmod>2014-09-27T16:37:58+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://blog.hrvoje.org/2014/09/a-simple-2048-clone-in-python/</loc>
+    <lastmod>2014-09-20T01:11:35+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://blog.hrvoje.org/categories/</loc>
+    <lastmod>2014-09-20T01:11:35+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://blog.hrvoje.org/categories/game/</loc>
+    <lastmod>2014-09-20T01:11:35+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://blog.hrvoje.org/categories/programming/</loc>
+    <lastmod>2014-09-20T01:11:35+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://blog.hrvoje.org/categories/python/</loc>
+    <lastmod>2014-09-20T01:11:35+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://blog.hrvoje.org/tags/</loc>
+  </url>
+  
+</urlset>
